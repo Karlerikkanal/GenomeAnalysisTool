@@ -1,0 +1,179 @@
+{
+  "name": "PDF agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainRetrievalQa",
+      "typeVersion": 1.4,
+      "position": [
+        40,
+        -20
+      ],
+      "id": "9869c11d-fe33-4dd5-9d95-e496a624ca0b",
+      "name": "Question and Answer Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        200
+      ],
+      "id": "96015485-d78a-4dfb-a9b6-7ce623817444",
+      "name": "Mistral Cloud Chat Model",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "xr1pdNAPj6ZlLp0h",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.retrieverVectorStore",
+      "typeVersion": 1,
+      "position": [
+        100,
+        140
+      ],
+      "id": "810b63ab-7fc4-469c-bd8a-602027b075a2",
+      "name": "Vector Store Retriever"
+    },
+    {
+      "parameters": {
+        "tableName": "pdf_vectors",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1,
+      "position": [
+        200,
+        320
+      ],
+      "id": "cf8bf3a7-ffcd-41f9-8785-9bc3efd8e0c0",
+      "name": "Postgres PGVector Store",
+      "credentials": {
+        "postgres": {
+          "id": "DktXLpDf4yoMoXMh",
+          "name": "Vector data"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        220,
+        460
+      ],
+      "id": "1a52e246-51a3-4d51-93f0-fc8a973db232",
+      "name": "Embeddings Mistral Cloud",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "xr1pdNAPj6ZlLp0h",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -140,
+        -20
+      ],
+      "id": "54c59716-72d9-42c4-9a91-19bd1045f0cd",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query": "What is a cobalamin riboswitch?"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Mistral Cloud Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Retriever": {
+      "ai_retriever": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_retriever",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres PGVector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Retriever",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Mistral Cloud": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Postgres PGVector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "85668b53-a70d-4c1d-9967-d56cd0854059",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fd3d3cdc6721a528a22cb747103d5caa827f5ce976b750bc0ea157931f2049c4"
+  },
+  "id": "vHlLtuL530UbpaFe",
+  "tags": []
+}

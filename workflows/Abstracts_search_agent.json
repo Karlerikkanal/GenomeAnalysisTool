@@ -1,0 +1,328 @@
+{
+  "name": "Abstracts search agent",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "db",
+              "value": "pubmed"
+            },
+            {
+              "name": "term",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "name": "retmax",
+              "value": "3"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -760,
+        -120
+      ],
+      "id": "2f460c34-365f-4c82-a16a-9c27266b28a1",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "fileSelector": "abstracts.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        -120
+      ],
+      "id": "dd3a0830-2203-4a8d-85a3-4c6ba341782e",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "destinationKey": "abstracts",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -120
+      ],
+      "id": "490ca610-6511-483e-9e70-deba4c1f4b2a",
+      "name": "Extract from File",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "raw_json.json",
+        "dataPropertyName": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -120
+      ],
+      "id": "9811711e-32ed-4de5-8ebe-4799457843c3",
+      "name": "Read/Write Files from Disk1"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "options": {
+          "fileName": "raw_json"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -580,
+        -120
+      ],
+      "id": "df99bd86-1b68-4152-81d5-f82768a72ba1",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        380,
+        60
+      ],
+      "id": "9b815cf0-e6fb-4016-889c-ca85c6db1abe",
+      "name": "Mistral Cloud Chat Model",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "xr1pdNAPj6ZlLp0h",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.abstracts }}",
+        "options": {
+          "systemMessage": "Your job is to create short summaries of the input paper abstracts. For each id in the input, summarise the abstract in 2-3 sentences. Keep the id-s associated with the abstracts on output.\n\n## Example output\nid: 123456\nsummary: this paper talks about this\n\nIf the incoming input is empty, it means no papers were found. In that case, simply return that no relevant papers were found."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        380,
+        -120
+      ],
+      "id": "38107e12-f3d1-4bf5-93f5-20f9451afffa",
+      "name": "Summariser agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        -1080,
+        80
+      ],
+      "id": "eb72b587-ec48-4cef-9410-3073edd425ac",
+      "name": "Mistral Cloud Chat Model1",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "xr1pdNAPj6ZlLp0h",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "You are a keyword extraction assistant. Your task is to extract the most relevant 2–4 word keyword phrase for searching a scientific database based on the user's question.\n\nOnly return one keyword phrase. It must be space-separated, without quotes, punctuation, or any other text.\n\nExample\nInput: What is the optimal temperature for Bifidobacterium longum growth?\nOutput: Bifidobacterium longum temperature"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -1080,
+        -120
+      ],
+      "id": "cf76ead5-36a4-4dd2-8b07-103ffd4dced7",
+      "name": "Keyword creator agent"
+    },
+    {
+      "parameters": {
+        "command": "=python scripts/extract_abstracts.py raw_json.json abstracts.json"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -220,
+        -120
+      ],
+      "id": "8b07afcd-434c-4eeb-84db-38c87d479451",
+      "name": "Extract abstracts from IDs"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1260,
+        -120
+      ],
+      "id": "ea2f7de9-8909-49aa-a555-6901e9a8c16e",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query": "How does Lentilactobacillus buchneri affect silage preservation?"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk1": {
+      "main": [
+        [
+          {
+            "node": "Extract abstracts from IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Summariser agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Cloud Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summariser agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Cloud Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Keyword creator agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keyword creator agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract abstracts from IDs": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Keyword creator agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "abc942a8-5f04-4542-ab85-41b6f91c776f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fd3d3cdc6721a528a22cb747103d5caa827f5ce976b750bc0ea157931f2049c4"
+  },
+  "id": "CLaqPcaVRABlaD0f",
+  "tags": []
+}

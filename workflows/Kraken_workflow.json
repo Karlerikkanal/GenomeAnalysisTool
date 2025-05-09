@@ -1,0 +1,560 @@
+{
+  "name": "Kraken workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "command": "scripts/run_trim_galore.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        780,
+        -40
+      ],
+      "id": "85a20a0f-975f-4ba8-beda-c29d3bf38753",
+      "name": "Trim Galore!"
+    },
+    {
+      "parameters": {
+        "formTitle": "Parameetrite sisestamine",
+        "formDescription": "Sisestage siia programmide jaoks vajalikud parameetrid",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "html",
+              "elementName": "Kausta header",
+              "html": "<!-- Your custom HTML here --->\n<h2>Kaustad</h2>"
+            },
+            {
+              "fieldLabel": "Andmete kaust",
+              "placeholder": "/data",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Väljundi kaust",
+              "placeholder": "/outputs",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Lõimede arv",
+              "fieldType": "number",
+              "placeholder": "8"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Järgmine leht >>",
+          "path": "kraken-workflow"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -460,
+        -40
+      ],
+      "id": "af294039-5192-40b4-a457-99bc4d4a1e73",
+      "name": "Start of form",
+      "webhookId": "6f49230f-c99b-47f6-ae8c-6881c89b85a7"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputDir = $('Start of form').first().json['Andmete kaust'];\nconst outputDir = $('Start of form').first().json['Väljundi kaust'];\nconst threads = $('Start of form').first().json['Lõimede arv'] || 8;\nconst trimPaired = $('Kraken parameters').first().json['Paaris või paaritu'] === 'Paaris';\nconst krakenDb = $('Kraken parameters').first().json['Krakeni andmebaas'];\nconst krakenPvalue = $('Kraken parameters').first().json['p-väärtus'];\nconst krakenPaired = $('Kraken parameters').first().json['Paaris või paaritu jooksutamine'] === 'Paaris';\nlet brackenReadlen = $('Bracken parameters').first().json['Read length'] || 100;\nlet brackenThreshold = $('Bracken parameters').first().json['Minimum abundance threshold'] || 10;\nlet brackenTaxonomy = $('Bracken parameters').first().json['Taxonomy level'] || \"S\";\nconst brackenIncludeIds = $('Bracken parameters').first().json['Include taxids'];\nconst brackenExcludeIds = $('Bracken parameters').first().json['Exclude taxids'];\n\n// Build config lines\nconst configLines = [\n  '# config.sh',\n  `BASE_INPUT_DIR=${inputDir}`,\n  `BASE_OUTPUT_DIR=${outputDir}`,\n  `THREADS=${threads}`,\n  `TRIMGALORE_paired=${trimPaired}`,\n  `KRAKEN_DB=${krakenDb}`,\n  `KRAKEN_pvalue=${krakenPvalue}`,\n  `KRAKEN_paired=${krakenPaired}`,\n  `BRACKEN_readlen=${brackenReadlen}`,\n  `BRACKEN_ab_threshold=${brackenThreshold}`,\n  `BRACKEN_taxonomy=${brackenTaxonomy}`,\n  `BRACKEN_include_ids=\"${brackenIncludeIds}\"`,\n  `BRACKEN_exclude_ids=\"${brackenExcludeIds}\"`,\n];\n\nreturn [{json: {config: configLines.join('\\n')}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        -40
+      ],
+      "id": "44fdb841-485c-4986-80b2-f1fd1fb59567",
+      "name": "Config file creation"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Parameetrid sisestatud!",
+        "completionMessage": "Workflow hakkab tööle koheselt...",
+        "options": {
+          "formTitle": ""
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        80,
+        -40
+      ],
+      "id": "61b5465b-d21f-4eba-8efa-8eae63096910",
+      "name": "End message",
+      "webhookId": "a089e8c5-32a7-4b84-ba43-aae49056ecc4"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "config.sh",
+        "dataPropertyName": "=config_file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        600,
+        -40
+      ],
+      "id": "412b0e3c-2416-4c78-a83e-13489e716529",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "config",
+        "binaryPropertyName": "config_file",
+        "options": {
+          "fileName": "config"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        420,
+        -40
+      ],
+      "id": "5acd649b-5e1b-4a48-93ef-1dc52b35d1c5",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "command": "scripts/run_kraken2.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        940,
+        -40
+      ],
+      "id": "c818128b-eddd-405c-a72b-6738d16c9e4a",
+      "name": "Kraken 2"
+    },
+    {
+      "parameters": {
+        "command": "scripts/run_bracken.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        -40
+      ],
+      "id": "821af4bb-f96d-472c-9acb-70f0c28f0ac5",
+      "name": "Bracken"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "html",
+              "elementName": "Trim galore header",
+              "html": "<!-- Your custom HTML here --->\n<h2>Trim Galore parameetrid</h2>\n\n\n"
+            },
+            {
+              "fieldLabel": "Paaris või paaritu",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Paaris"
+                  },
+                  {
+                    "option": "Paaritu"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldType": "html",
+              "elementName": "Parameetri header",
+              "html": "<!-- Your custom HTML here --->\n<h2>Krakeni parameetrid</h2>\n"
+            },
+            {
+              "fieldLabel": "Krakeni andmebaas",
+              "placeholder": "/kraken_db",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "p-väärtus",
+              "fieldType": "number",
+              "placeholder": "0.5",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Paaris või paaritu jooksutamine",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "=Paaritu"
+                  },
+                  {
+                    "option": "Paaris"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Järgmine leht >>"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        -40
+      ],
+      "id": "7838557c-a669-4f08-94c0-b2b6cc62cd37",
+      "name": "Kraken parameters",
+      "webhookId": "125f9b80-79b8-4c4e-9993-34e43e5249e0"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "html",
+              "elementName": "bracken_header",
+              "html": "<!-- Your custom HTML here --->\n<h2>Brackeni parameetrid</h2>\n\n<p>Filtreerimise jaoks eraldada ID-d tühikutega: 9681 2036 ...</p>"
+            },
+            {
+              "fieldLabel": "Read length",
+              "fieldType": "number",
+              "placeholder": "100"
+            },
+            {
+              "fieldLabel": "Minimum abundance threshold",
+              "fieldType": "number",
+              "placeholder": "10"
+            },
+            {
+              "fieldLabel": "Taxonomy level",
+              "placeholder": "S"
+            },
+            {
+              "fieldLabel": "Include taxids"
+            },
+            {
+              "fieldLabel": "Exclude taxids"
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Järgmine leht >>"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        -40
+      ],
+      "id": "e355957a-fc3e-4581-bad9-322e60dfc7d0",
+      "name": "Bracken parameters",
+      "webhookId": "f634e7f9-8fd7-4be2-86f5-6e567f84f27a"
+    },
+    {
+      "parameters": {
+        "command": "scripts/filter_bracken_out.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        -160
+      ],
+      "id": "a03cc623-7de2-4d6b-9dfc-93117333a18f",
+      "name": "Filter Bracken Out"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e35fe129-cc91-490e-8d74-1206b4075304",
+              "leftValue": "={{ $('Bracken parameters').item.json['Include taxids'] }}",
+              "rightValue": "\"\"",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "c57a01c6-ef4a-49f3-a0e9-e9d1afd5b51b",
+              "leftValue": "={{ $('Bracken parameters').item.json['Exclude taxids'] }}",
+              "rightValue": "\"\"",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1300,
+        -40
+      ],
+      "id": "ad8aac13-d0c4-4f18-84e3-10693f95222a",
+      "name": "If IDs for filtering exist"
+    },
+    {
+      "parameters": {
+        "command": "=scripts/calculate_diversity.sh -f {{ $json.filtered }}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1880,
+        -20
+      ],
+      "id": "337f8864-2be6-46c4-88a0-5f25827c5da3",
+      "name": "Diversity calculation"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0072abcc-60d0-4e0b-a329-a90f06b5c0ca",
+              "name": "filtered",
+              "value": "false",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1500,
+        -20
+      ],
+      "id": "d9ccb762-7c92-4c98-8afc-e154828ff1e6",
+      "name": "Set filtered param"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4530d45a-88e6-4e55-b80e-490e5bdd3418",
+              "name": "filtered",
+              "value": "true",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1660,
+        -160
+      ],
+      "id": "fe5aa213-ab8d-4ec2-9aab-e61c6cf679ca",
+      "name": "Set filtered param1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start of form": {
+      "main": [
+        [
+          {
+            "node": "Kraken parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config file creation": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "End message": {
+      "main": [
+        [
+          {
+            "node": "Config file creation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Trim Galore!",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trim Galore!": {
+      "main": [
+        [
+          {
+            "node": "Kraken 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bracken": {
+      "main": [
+        [
+          {
+            "node": "If IDs for filtering exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kraken 2": {
+      "main": [
+        [
+          {
+            "node": "Bracken",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kraken parameters": {
+      "main": [
+        [
+          {
+            "node": "Bracken parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bracken parameters": {
+      "main": [
+        [
+          {
+            "node": "End message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Bracken Out": {
+      "main": [
+        [
+          {
+            "node": "Set filtered param1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If IDs for filtering exist": {
+      "main": [
+        [
+          {
+            "node": "Filter Bracken Out",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set filtered param",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set filtered param": {
+      "main": [
+        [
+          {
+            "node": "Diversity calculation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set filtered param1": {
+      "main": [
+        [
+          {
+            "node": "Diversity calculation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "474284a7-ae67-40c3-b298-8c8346efa01b",
+  "meta": {
+    "instanceId": "fd3d3cdc6721a528a22cb747103d5caa827f5ce976b750bc0ea157931f2049c4"
+  },
+  "id": "2fXj5QAeZkUFOeB9",
+  "tags": []
+}

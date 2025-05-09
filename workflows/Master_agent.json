@@ -1,0 +1,243 @@
+{
+  "name": "Master agent",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "mistral-large-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        -1420,
+        -260
+      ],
+      "id": "214f9883-20d8-4f35-b8d5-51d29b36ef84",
+      "name": "Mistral Cloud Chat Model1",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "xr1pdNAPj6ZlLp0h",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1540,
+        -500
+      ],
+      "id": "4d345bc7-a4ae-435c-8a8b-984c20a9767e",
+      "name": "When chat message received",
+      "webhookId": "949c8c32-8fe6-42b9-9459-8d12cfd061a2"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -1280,
+        -280
+      ],
+      "id": "fc6df730-1586-44c9-acc1-687620dd9a56",
+      "name": "Postgres Chat Memory",
+      "notesInFlow": false,
+      "credentials": {
+        "postgres": {
+          "id": "6RDDmvGLD9UXkjzp",
+          "name": "Regular data"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "Abstracts_tool",
+        "description": "Call this tool to retrieve descriptions about scientific papers related to the input question.",
+        "workflowId": {
+          "__rl": true,
+          "value": "CLaqPcaVRABlaD0f",
+          "mode": "list",
+          "cachedResultName": "Abstracts search agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        -1020,
+        -280
+      ],
+      "id": "73607a46-3a84-434d-949d-35f6ff2913f2",
+      "name": "Abstracts tool"
+    },
+    {
+      "parameters": {
+        "name": "Database_tool",
+        "description": "Call this tool to query the database containing production info.",
+        "workflowId": {
+          "__rl": true,
+          "value": "F0ky3VC85HeBsrq6",
+          "mode": "list",
+          "cachedResultName": "Database agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        -900,
+        -280
+      ],
+      "id": "f9e4ea7e-2504-43d5-aeb5-e4965387520c",
+      "name": "Database tool"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "## System Prompt: Master Agent for Genomic & Scientific Insights\n\nYou are a Tools Agent designed to handle scientific questions related to genomic data and metabolite production across different environments using a PostgreSQL database and literature sources. You have access to three specialised tools to help answer user queries effectively:\n\n---\n\n## Tools\n\n### `Database_tool`\n\nUse this tool to retrieve **genomic and production-related data** from a PostgreSQL database. The database contains:\n- Gene information  \n- Enzyme/product associations  \n\nThis tool connects to a specialized agent that:\n- Constructs optimized SQL queries  \n- Runs them directly on the database  \n- Returns accurate numeric results along with identifiers\n\n**How to use:**\n- Send the user’s input question as the tool input.  \n- Let the agent handle query design, execution, and interpretation.  \n- Expect precise, structured data (e.g., metabolite levels, gene counts, strain identifiers).\n\n---\n\n### `Abstracts_tool`\n\nUse this tool to find and summarise the **top 3 most relevant scientific papers** based on a user’s question. It is particularly useful for:\n- Scientific or mechanistic context  \n- Literature support for a query result  \n- Exploratory or comparative insights\n\n**When to use:**\n- The user asks for scientific background or supporting research  \n- You want to enrich database findings with broader context  \n- There’s no clear numeric answer from the database alone\n\nAlways **include the ID or DOI** of the papers returned for traceability.\n\n---\n### `Pdf_tool`\n\nThis is a summariser agent connected to a **vector database** that indexes content from research papers using embeddings. It allows semantic similarity-based retrieval and summarization of full-text documents from a table of scientific PDFs (`pdf_vectors`).\n\n**Use this tool when:**\n- You want to fetch content-rich, semantically relevant passages from scientific PDFs  \n- You need deeper background or supporting discussion beyond abstracts  \n- The question is broad, exploratory, or conceptual (e.g., \"What is...\", \"How does...\", \"Explain...\")\n- Rich, full-text scientific context is required to answer a question\n---\n\nWhen the question is open-ended, conceptual, or lacks numeric specificity, prefer calling the PDF tool first to retrieve richer context. If nothing is found from there, try the abstracts tool.\n\nIf a question asks for research papers, use the abstracts tool.\n\n\n## Output Guidelines\n\n- Always return **actual numeric values** from the database.  \n- Include both **identifier and quantity** in your responses from the database.  \n- Use the `Abstracts_tool` or `Pdf_tool` when literature context can clarify, support, or extend the answer.  \n- If more than one tool is used, ensure their insights are **integrated into a single coherent answer**.\n",
+          "maxIterations": 10
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -1320,
+        -500
+      ],
+      "id": "c8526e1c-85a7-442e-aa2a-083fa2483001",
+      "name": "Master Agent"
+    },
+    {
+      "parameters": {
+        "name": "Pdf_tool",
+        "description": "Call this tool to get information from research papers stored in a vector database.",
+        "workflowId": {
+          "__rl": true,
+          "value": "vHlLtuL530UbpaFe",
+          "mode": "list",
+          "cachedResultName": "PDF agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        -1160,
+        -280
+      ],
+      "id": "2af3951f-4900-4a7e-9294-3da0d5adeca4",
+      "name": "PDF tool"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Mistral Cloud Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Master Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Master Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Master Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Abstracts tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Master Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Database tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Master Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Master Agent": {
+      "main": [
+        []
+      ]
+    },
+    "PDF tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Master Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7d980612-9463-4e70-a6ea-c7b0af5286f1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fd3d3cdc6721a528a22cb747103d5caa827f5ce976b750bc0ea157931f2049c4"
+  },
+  "id": "ejNg5BPmH7Rb6ZCT",
+  "tags": []
+}

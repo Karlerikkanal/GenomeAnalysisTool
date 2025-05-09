@@ -1,0 +1,906 @@
+{
+  "name": "Master workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "command": "scripts/run_prokka.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        -180
+      ],
+      "id": "1afa6c35-30ad-4764-98da-d95b4afcd5e2",
+      "name": "Prokka"
+    },
+    {
+      "parameters": {
+        "command": "scripts/run_megahit.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        140,
+        -200
+      ],
+      "id": "abc172df-2242-4cc1-9469-1724708afdbf",
+      "name": "Megahit"
+    },
+    {
+      "parameters": {
+        "command": "scripts/run_trim_galore.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        -200
+      ],
+      "id": "f70d4d71-8667-4094-b213-b994dfffd9ce",
+      "name": "Trim Galore!"
+    },
+    {
+      "parameters": {
+        "command": "scripts/run_integron_finder.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        2120,
+        -180
+      ],
+      "id": "40560d4a-b72c-4519-8446-951abdc1320a",
+      "name": "IntegronFinder"
+    },
+    {
+      "parameters": {
+        "command": "scripts/run_quast.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        300,
+        -200
+      ],
+      "id": "30cc1d72-23ca-409c-9a0f-c6cb2ab311a2",
+      "name": "Quast"
+    },
+    {
+      "parameters": {
+        "command": "scripts/run_abricate.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1960,
+        -180
+      ],
+      "id": "2e1500c4-ce4e-432e-82a4-f9888bf149e4",
+      "name": "Abricate"
+    },
+    {
+      "parameters": {
+        "command": "scripts/run_isescan.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        2280,
+        -180
+      ],
+      "id": "2a1d06e6-35c7-49a6-aa6f-c5dd7abf0526",
+      "name": "ISEScan"
+    },
+    {
+      "parameters": {
+        "command": "scripts/run_keggcharter.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        -180
+      ],
+      "id": "0ed0675b-f7a3-4320-b966-101efab7a6dc",
+      "name": "KeggCharter"
+    },
+    {
+      "parameters": {
+        "command": "scripts/run_roary.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        2620,
+        -200
+      ],
+      "id": "565da687-3f00-4d4e-867c-9573180a77b3",
+      "name": "Roary"
+    },
+    {
+      "parameters": {
+        "command": "scripts/run_kraken2.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        480,
+        -200
+      ],
+      "id": "9e27f1a0-0c11-4555-bc77-9dbce4ff6a2b",
+      "name": "Kraken 2"
+    },
+    {
+      "parameters": {
+        "command": "scripts/run_bracken.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        640,
+        -200
+      ],
+      "id": "40bf86fc-8926-40c1-9a55-e6757f3d8d98",
+      "name": "Bracken"
+    },
+    {
+      "parameters": {
+        "command": "scripts/filter_bracken_out.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        -320
+      ],
+      "id": "4eeb656f-7044-4f75-a39c-932dd0c0a413",
+      "name": "Filter Bracken Out"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e35fe129-cc91-490e-8d74-1206b4075304",
+              "leftValue": "={{ $('Bracken parameters').item.json['Include taxids'] }}",
+              "rightValue": "\"\"",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "c57a01c6-ef4a-49f3-a0e9-e9d1afd5b51b",
+              "leftValue": "={{ $('Bracken parameters').item.json['Exclude taxids'] }}",
+              "rightValue": "\"\"",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        840,
+        -200
+      ],
+      "id": "deba011d-61e2-46e9-b6c0-6af90f7b3f7c",
+      "name": "If IDs for filtering exist"
+    },
+    {
+      "parameters": {
+        "command": "=scripts/calculate_diversity.sh -f {{ $json.filtered }}"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1420,
+        -180
+      ],
+      "id": "b4dbda3d-fc0a-4d12-9a89-38b87c5de134",
+      "name": "Diversity calculation"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "html",
+              "elementName": "Trim galore header",
+              "html": "<!-- Your custom HTML here --->\n<h2>Trim Galore! parameetrid</h2>\n"
+            },
+            {
+              "fieldLabel": "Paaris või paaritu",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Paaris"
+                  },
+                  {
+                    "option": "Paaritu"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldType": "html",
+              "elementName": "Megahit header",
+              "html": "<!-- Your custom HTML here --->\n<h2>Megahit parameetrid</h2>\n<p>Siin tuleb teha valik, kas defineerite ise kaustad assambleerimiseks kujul kaust1 kaust2;kaust3 kaust4 nii et grupid on eraldatud semikooloniga ja kombineeritavad kaustad tühikuga\nvõi lisate numbri, mitu kausta omavahel järjest kombineeritakse.</p>\n<p>Valige variantidest üks ja jätke teine lahter tühjaks.</p>"
+            },
+            {
+              "fieldLabel": "Kaustade nimekiri",
+              "placeholder": "kaust1 kaust2;kaust3 kaust4"
+            },
+            {
+              "fieldLabel": "Mitu kausta kombineerida järjest",
+              "fieldType": "number",
+              "placeholder": "2"
+            },
+            {
+              "fieldType": "html",
+              "elementName": "Parameetri header",
+              "html": "<!-- Your custom HTML here --->\n<h2>Krakeni parameetrid</h2>\n\n\n"
+            },
+            {
+              "fieldLabel": "Krakeni andmebaas",
+              "placeholder": "/kraken_db",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "p-väärtus",
+              "fieldType": "number",
+              "placeholder": "0.5",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Paaris või paaritu jooksutamine",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "=Paaritu"
+                  },
+                  {
+                    "option": "Paaris"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Järgmine leht >>"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -1400,
+        -200
+      ],
+      "id": "e606963d-6bcb-458b-90f9-c51ee3d3cb9c",
+      "name": "Kraken parameters",
+      "webhookId": "125f9b80-79b8-4c4e-9993-34e43e5249e0"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "html",
+              "elementName": "Abricate params header",
+              "html": "<!-- Your custom HTML here --->\n<h2>Abricate parameetrid</h2>\n\n<p>Jäta andmebaasi lahter tühjaks, et tavaliste andmebaasidega jooksutada. Vastasel juhul eralda andmebaasid tühikuga: megares ncbi ...</p>"
+            },
+            {
+              "fieldLabel": "Andmebaasid",
+              "placeholder": "megares ncbi plasmidfinder argannot resfinder card ecoli_vf vfdb"
+            },
+            {
+              "fieldLabel": "Minimum identity percentage",
+              "fieldType": "number",
+              "placeholder": "70"
+            },
+            {
+              "fieldLabel": "Minimum identity coverage",
+              "fieldType": "number",
+              "placeholder": "40"
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Järgmine leht >>"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -1040,
+        -200
+      ],
+      "id": "1535b980-84f8-4c63-90ee-ef1de2082a05",
+      "name": "Abricate Parameters",
+      "webhookId": "e1b4bc37-83b1-4be2-91cf-a41e04386dbb"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "html",
+              "elementName": "bracken_header",
+              "html": "<!-- Your custom HTML here --->\n<h2>Brackeni parameetrid</h2>\n<p>Filtreerimise jaoks eraldada ID-d tühikutega: 9681 2036 ...</p>"
+            },
+            {
+              "fieldLabel": "Read length",
+              "fieldType": "number",
+              "placeholder": "100"
+            },
+            {
+              "fieldLabel": "Minimum abundance threshold",
+              "fieldType": "number",
+              "placeholder": "10"
+            },
+            {
+              "fieldLabel": "Taxonomy level",
+              "placeholder": "S"
+            },
+            {
+              "fieldLabel": "Include taxids"
+            },
+            {
+              "fieldLabel": "Exclude taxids"
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Järgmine leht >>"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -1220,
+        -200
+      ],
+      "id": "6e1fe836-a236-4b9f-8e60-9211c953605c",
+      "name": "Bracken parameters",
+      "webhookId": "f634e7f9-8fd7-4be2-86f5-6e567f84f27a"
+    },
+    {
+      "parameters": {
+        "formTitle": "Parameetrite sisestamine",
+        "formDescription": "Sisestage siia programmide jaoks vajalikud parameetrid",
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "html",
+              "elementName": "Kausta header",
+              "html": "<!-- Your custom HTML here --->\n<h2>Kaustad ja lõimede arv</h2>"
+            },
+            {
+              "fieldLabel": "Andmete kaust",
+              "placeholder": "/data",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Väljundi kaust",
+              "placeholder": "/outputs",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Lõimede arv",
+              "fieldType": "number",
+              "placeholder": "8"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Järgmine leht >>",
+          "path": "master-workflow"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -1600,
+        -200
+      ],
+      "id": "2ca3cdec-6ab9-49b3-8fd7-4476bc440c49",
+      "name": "Start of form",
+      "webhookId": "6f49230f-c99b-47f6-ae8c-6881c89b85a7"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputDir = $('Start of form').first().json['Andmete kaust'];\nconst outputDir = $('Start of form').first().json['Väljundi kaust'];\nconst threads = $('Start of form').first().json['Lõimede arv'] || 8;\nconst trimPaired = $('Kraken parameters').first().json['Paaris või paaritu'] === 'Paaris';\nconst megahitBatches = $('Kraken parameters').first().json['Mitu kausta kombineerida järjest']|| 1;\nconst megahitFolders = $('Kraken parameters').first().json['Kaustade nimekiri'];\nconst krakenDb = $('Kraken parameters').first().json['Krakeni andmebaas'];\nconst krakenPvalue = $('Kraken parameters').first().json['p-väärtus'];\nconst krakenPaired = $('Kraken parameters').first().json['Paaris või paaritu jooksutamine'] === 'Paaris';\n\nconst brackenReadlen = $('Bracken parameters').first().json['Read length'] || 100;\nconst brackenThreshold = $('Bracken parameters').first().json['Minimum abundance threshold'] || 10;\nconst brackenTaxonomy = $('Bracken parameters').first().json['Taxonomy level'] || \"S\";\nconst brackenIncludeIds = $('Bracken parameters').first().json['Include taxids'];\nconst brackenExcludeIds = $('Bracken parameters').first().json['Exclude taxids'];\n\nconst abricateDbList = $('Abricate Parameters').first().json.Andmebaasid;\nconst abricateMinId = $('Abricate Parameters').first().json['Minimum identity percentage'] || 70;\nconst abricateMinCov = $('Abricate Parameters').first().json['Minimum identity coverage'] || 40;\n\nconst roaryGenomes = $input.first().json['Geenide nimekiri'];\n\n// Build config lines\nconst configLines = [\n  '# config.sh',\n  `BASE_INPUT_DIR=${inputDir}`,\n  `BASE_OUTPUT_DIR=${outputDir}`,\n  `THREADS=${threads}`,\n  `MEGAHIT_batches=${megahitBatches}`,\n  `MEGAHIT_folders=\"${megahitFolders}\"`,\n  `TRIMGALORE_paired=${trimPaired}`,\n  `KRAKEN_DB=${krakenDb}`,\n  `KRAKEN_pvalue=${krakenPvalue}`,\n  `KRAKEN_paired=${krakenPaired}`,\n  `BRACKEN_readlen=${brackenReadlen}`,\n  `BRACKEN_ab_threshold=${brackenThreshold}`,\n  `BRACKEN_taxonomy=${brackenTaxonomy}`,\n  `BRACKEN_include_ids=\"${brackenIncludeIds}\"`,\n  `BRACKEN_exclude_ids=\"${brackenExcludeIds}\"`,\n  `ABRICATE_db_list=\"${abricateDbList}\"`,\n  `ABRICATE_minid_per=${abricateMinId}`,\n  `ABRICATE_minid_cov=${abricateMinCov}`,\n  `ROARY_genomes=\"${roaryGenomes}\"`\n];\n\nreturn [{json: {config: configLines.join('\\n')}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -520,
+        -200
+      ],
+      "id": "53314e44-b218-401e-80db-63bb88c32c21",
+      "name": "Config file creation"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Parameetrid sisestatud!",
+        "completionMessage": "Workflow hakkab tööle koheselt...",
+        "options": {
+          "formTitle": ""
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -700,
+        -200
+      ],
+      "id": "d7f7c708-812b-46b9-a64d-c90a1e15e22b",
+      "name": "End message",
+      "webhookId": "a089e8c5-32a7-4b84-ba43-aae49056ecc4"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "config.sh",
+        "dataPropertyName": "=config_file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        -200
+      ],
+      "id": "ded55e89-ff48-4475-b423-340e1e658b76",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "config",
+        "binaryPropertyName": "config_file",
+        "options": {
+          "fileName": "config"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -360,
+        -200
+      ],
+      "id": "ed69428d-c533-41c2-8d48-4c40eb4e6da6",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0072abcc-60d0-4e0b-a329-a90f06b5c0ca",
+              "name": "filtered",
+              "value": "false",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        -180
+      ],
+      "id": "18bac374-9f73-496d-a972-06fe6f2b079e",
+      "name": "Set filtered param"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4530d45a-88e6-4e55-b80e-490e5bdd3418",
+              "name": "filtered",
+              "value": "true",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1200,
+        -320
+      ],
+      "id": "b16a1cb2-7d40-41ca-81e8-0868e5b42d6c",
+      "name": "Set filtered param1"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "html",
+              "html": "<h2>Roary genoomid (pan-genoomi arvutamine)</h2>\n<p>Tühikuga eraldatud geenijuppide nimed, mida pan-genoomi arvutamiseks kasutada (123 234 345...). Jäta lahter tühjaks kui ei soovi arvutada.</p>\n\n"
+            },
+            {
+              "fieldLabel": "Geenide nimekiri"
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Lõpeta sisestamine"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -860,
+        -200
+      ],
+      "id": "52760191-81be-4b3b-b0a5-921bba6cbbaf",
+      "name": "Pan-genome genomes",
+      "webhookId": "fd4604c6-9520-427d-bb9d-0597044394d3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6aa1075d-7e44-427a-a558-39e4ad06c52e",
+              "leftValue": "={{ $('Pan-genome genomes').item.json['Geenide nimekiri'] }}",
+              "rightValue": "\"\"",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2440,
+        -180
+      ],
+      "id": "5b112154-0cc4-4056-9940-c948966f2dee",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Megahit": {
+      "main": [
+        [
+          {
+            "node": "Quast",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trim Galore!": {
+      "main": [
+        [
+          {
+            "node": "Megahit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prokka": {
+      "main": [
+        [
+          {
+            "node": "KeggCharter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "KeggCharter": {
+      "main": [
+        [
+          {
+            "node": "Abricate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kraken 2": {
+      "main": [
+        [
+          {
+            "node": "Bracken",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bracken": {
+      "main": [
+        [
+          {
+            "node": "If IDs for filtering exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If IDs for filtering exist": {
+      "main": [
+        [
+          {
+            "node": "Filter Bracken Out",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set filtered param",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Bracken Out": {
+      "main": [
+        [
+          {
+            "node": "Set filtered param1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Kraken parameters": {
+      "main": [
+        [
+          {
+            "node": "Bracken parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Abricate Parameters": {
+      "main": [
+        [
+          {
+            "node": "Pan-genome genomes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bracken parameters": {
+      "main": [
+        [
+          {
+            "node": "Abricate Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start of form": {
+      "main": [
+        [
+          {
+            "node": "Kraken parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "End message": {
+      "main": [
+        [
+          {
+            "node": "Config file creation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config file creation": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Trim Galore!",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quast": {
+      "main": [
+        [
+          {
+            "node": "Kraken 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Roary": {
+      "main": [
+        []
+      ]
+    },
+    "Abricate": {
+      "main": [
+        [
+          {
+            "node": "IntegronFinder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ISEScan": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IntegronFinder": {
+      "main": [
+        [
+          {
+            "node": "ISEScan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set filtered param": {
+      "main": [
+        [
+          {
+            "node": "Diversity calculation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set filtered param1": {
+      "main": [
+        [
+          {
+            "node": "Diversity calculation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pan-genome genomes": {
+      "main": [
+        [
+          {
+            "node": "End message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Roary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Diversity calculation": {
+      "main": [
+        [
+          {
+            "node": "Prokka",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8d32d065-f65d-4842-8761-fa5b0a8a6086",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fd3d3cdc6721a528a22cb747103d5caa827f5ce976b750bc0ea157931f2049c4"
+  },
+  "id": "B8or7vBxNhSzfCAq",
+  "tags": []
+}
