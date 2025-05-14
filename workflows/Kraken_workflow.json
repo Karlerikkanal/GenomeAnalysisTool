@@ -60,19 +60,6 @@
     },
     {
       "parameters": {
-        "jsCode": "const inputDir = $('Start of form').first().json['Andmete kaust'];\nconst outputDir = $('Start of form').first().json['Väljundi kaust'];\nconst threads = $('Start of form').first().json['Lõimede arv'] || 8;\nconst trimPaired = $('Kraken parameters').first().json['Paaris või paaritu'] === 'Paaris';\nconst krakenDb = $('Kraken parameters').first().json['Krakeni andmebaas'];\nconst krakenPvalue = $('Kraken parameters').first().json['p-väärtus'];\nconst krakenPaired = $('Kraken parameters').first().json['Paaris või paaritu jooksutamine'] === 'Paaris';\nlet brackenReadlen = $('Bracken parameters').first().json['Read length'] || 100;\nlet brackenThreshold = $('Bracken parameters').first().json['Minimum abundance threshold'] || 10;\nlet brackenTaxonomy = $('Bracken parameters').first().json['Taxonomy level'] || \"S\";\nconst brackenIncludeIds = $('Bracken parameters').first().json['Include taxids'];\nconst brackenExcludeIds = $('Bracken parameters').first().json['Exclude taxids'];\n\n// Build config lines\nconst configLines = [\n  '# config.sh',\n  `BASE_INPUT_DIR=${inputDir}`,\n  `BASE_OUTPUT_DIR=${outputDir}`,\n  `THREADS=${threads}`,\n  `TRIMGALORE_paired=${trimPaired}`,\n  `KRAKEN_DB=${krakenDb}`,\n  `KRAKEN_pvalue=${krakenPvalue}`,\n  `KRAKEN_paired=${krakenPaired}`,\n  `BRACKEN_readlen=${brackenReadlen}`,\n  `BRACKEN_ab_threshold=${brackenThreshold}`,\n  `BRACKEN_taxonomy=${brackenTaxonomy}`,\n  `BRACKEN_include_ids=\"${brackenIncludeIds}\"`,\n  `BRACKEN_exclude_ids=\"${brackenExcludeIds}\"`,\n];\n\nreturn [{json: {config: configLines.join('\\n')}}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        260,
-        -40
-      ],
-      "id": "44fdb841-485c-4986-80b2-f1fd1fb59567",
-      "name": "Config file creation"
-    },
-    {
-      "parameters": {
         "operation": "completion",
         "completionTitle": "Parameetrid sisestatud!",
         "completionMessage": "Workflow hakkab tööle koheselt...",
@@ -223,51 +210,6 @@
     },
     {
       "parameters": {
-        "formFields": {
-          "values": [
-            {
-              "fieldType": "html",
-              "elementName": "bracken_header",
-              "html": "<!-- Your custom HTML here --->\n<h2>Brackeni parameetrid</h2>\n\n<p>Filtreerimise jaoks eraldada ID-d tühikutega: 9681 2036 ...</p>"
-            },
-            {
-              "fieldLabel": "Read length",
-              "fieldType": "number",
-              "placeholder": "100"
-            },
-            {
-              "fieldLabel": "Minimum abundance threshold",
-              "fieldType": "number",
-              "placeholder": "10"
-            },
-            {
-              "fieldLabel": "Taxonomy level",
-              "placeholder": "S"
-            },
-            {
-              "fieldLabel": "Include taxids"
-            },
-            {
-              "fieldLabel": "Exclude taxids"
-            }
-          ]
-        },
-        "options": {
-          "buttonLabel": "Järgmine leht >>"
-        }
-      },
-      "type": "n8n-nodes-base.form",
-      "typeVersion": 1,
-      "position": [
-        -100,
-        -40
-      ],
-      "id": "e355957a-fc3e-4581-bad9-322e60dfc7d0",
-      "name": "Bracken parameters",
-      "webhookId": "f634e7f9-8fd7-4be2-86f5-6e567f84f27a"
-    },
-    {
-      "parameters": {
         "command": "scripts/filter_bracken_out.sh"
       },
       "type": "n8n-nodes-base.executeCommand",
@@ -381,6 +323,87 @@
       ],
       "id": "fe5aa213-ab8d-4ec2-9aab-e61c6cf679ca",
       "name": "Set filtered param1"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldType": "html",
+              "elementName": "bracken_header",
+              "html": "<!-- Your custom HTML here --->\n<h2>Brackeni ja KrakenTools parameetrid</h2>\n<p>Filtreerimise jaoks eraldada ID-d tühikutega: ID1 ID2 ...</p>"
+            },
+            {
+              "fieldLabel": "Read length",
+              "fieldType": "number",
+              "placeholder": "100"
+            },
+            {
+              "fieldLabel": "Minimum abundance threshold",
+              "fieldType": "number",
+              "placeholder": "10"
+            },
+            {
+              "fieldLabel": "Taxonomy level",
+              "placeholder": "S"
+            },
+            {
+              "fieldLabel": "Include taxids"
+            },
+            {
+              "fieldLabel": "Exclude taxids"
+            },
+            {
+              "fieldLabel": "Alfamitmekesisuse tüüp",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Shannon"
+                  },
+                  {
+                    "option": "Berger-Parker"
+                  },
+                  {
+                    "option": "Simpson"
+                  },
+                  {
+                    "option": "Pöörd-Simpson"
+                  },
+                  {
+                    "option": "Fisheri indeks"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Järgmine leht >>"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -40
+      ],
+      "id": "39617c03-76be-45d0-a4a4-c53885a4151b",
+      "name": "Bracken parameters",
+      "webhookId": "f634e7f9-8fd7-4be2-86f5-6e567f84f27a"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputDir = $('Start of form').first().json['Andmete kaust'];\nconst outputDir = $('Start of form').first().json['Väljundi kaust'];\nconst threads = $('Start of form').first().json['Lõimede arv'] || 8;\nconst trimPaired = $('Kraken parameters').first().json['Paaris või paaritu'] === 'Paaris';\nconst krakenDb = $('Kraken parameters').first().json['Krakeni andmebaas'];\nconst krakenPvalue = $('Kraken parameters').first().json['p-väärtus'];\nconst krakenPaired = $('Kraken parameters').first().json['Paaris või paaritu jooksutamine'] === 'Paaris';\nlet brackenReadlen = $('Bracken parameters').first().json['Read length'] || 100;\nlet brackenThreshold = $('Bracken parameters').first().json['Minimum abundance threshold'] || 10;\nlet brackenTaxonomy = $('Bracken parameters').first().json['Taxonomy level'] || \"S\";\nconst brackenIncludeIds = $('Bracken parameters').first().json['Include taxids'];\nconst brackenExcludeIds = $('Bracken parameters').first().json['Exclude taxids'];\nconst selectedOption = $('Bracken parameters').first().json['Alfamitmekesisuse tüüp'] || \"Shannon\";\nconst diversityMapping = {\n    \"Shannon\": \"Sh\",\n    \"Berger-Parker\": \"BP\",\n    \"Simpson\": \"Si\",\n    \"Pöörd-Simpson\": \"ISi\",\n    \"Fisheri indeks\": \"F\"\n};\nconst alphaDiversity = diversityMapping[selectedOption] || \"Sh\";\n\n// Build config lines\nconst configLines = [\n  '# config.sh',\n  `BASE_INPUT_DIR=${inputDir}`,\n  `BASE_OUTPUT_DIR=${outputDir}`,\n  `THREADS=${threads}`,\n  `TRIMGALORE_paired=${trimPaired}`,\n  `KRAKEN_DB=${krakenDb}`,\n  `KRAKEN_pvalue=${krakenPvalue}`,\n  `KRAKEN_paired=${krakenPaired}`,\n  `BRACKEN_readlen=${brackenReadlen}`,\n  `BRACKEN_ab_threshold=${brackenThreshold}`,\n  `BRACKEN_taxonomy=${brackenTaxonomy}`,\n  `BRACKEN_include_ids=\"${brackenIncludeIds}\"`,\n  `BRACKEN_exclude_ids=\"${brackenExcludeIds}\"`,\n  `DIVERSITY_type=\"${alphaDiversity}\"`,\n];\n\nreturn [{json: {config: configLines.join('\\n')}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        -40
+      ],
+      "id": "44fdb841-485c-4986-80b2-f1fd1fb59567",
+      "name": "Config file creation"
     }
   ],
   "pinData": {},
@@ -390,17 +413,6 @@
         [
           {
             "node": "Kraken parameters",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Config file creation": {
-      "main": [
-        [
-          {
-            "node": "Convert to File",
             "type": "main",
             "index": 0
           }
@@ -484,17 +496,6 @@
         ]
       ]
     },
-    "Bracken parameters": {
-      "main": [
-        [
-          {
-            "node": "End message",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Filter Bracken Out": {
       "main": [
         [
@@ -545,13 +546,35 @@
           }
         ]
       ]
+    },
+    "Bracken parameters": {
+      "main": [
+        [
+          {
+            "node": "End message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config file creation": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "474284a7-ae67-40c3-b298-8c8346efa01b",
+  "versionId": "2f21e74f-ef40-4781-a230-d297bf12a04d",
   "meta": {
     "instanceId": "fd3d3cdc6721a528a22cb747103d5caa827f5ce976b750bc0ea157931f2049c4"
   },

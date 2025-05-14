@@ -24,6 +24,7 @@ BASE_OUT_DIR="${BASE_OUT_DIR:-$BASE_OUTPUT_DIR}"
 INPUT_DIR="${INPUT_DIR:-$BASE_OUT_DIR/bracken_out}"
 OUTPUT_DIR="${OUTPUT_DIR:-$BASE_OUT_DIR/diversity_out}"
 FILTERED="${FILTERED:-false}"
+DIVERSITY_TYPE="${DIVERSITY_TYPE:-$DIVERSITY_type}"
 
 if [[ -z "$INPUT_DIR" || -z "$OUTPUT_DIR" ]]; then
     echo "Error: Both input and output directories must be specified."
@@ -47,7 +48,7 @@ find "$INPUT_DIR" -type f -name "*.bracken" | while read -r bracken_file; do
     alpha_output_file="$OUTPUT_DIR/${sample_name}_alpha.txt"
 
     # Calculate alpha diversity
-    python KrakenTools/DiversityTools/alpha_diversity.py -f "$bracken_file" > "$alpha_output_file"
+    python KrakenTools/DiversityTools/alpha_diversity.py -a $DIVERSITY_TYPE -f "$bracken_file" > "$alpha_output_file"
 
     if [ $? -eq 0 ]; then
         echo "Alpha diversity analysis completed for $sample_name"
