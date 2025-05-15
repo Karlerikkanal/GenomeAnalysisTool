@@ -224,7 +224,7 @@
               "html": "<!-- Your custom HTML here --->\n<h2>Trim Galore! parameetrid</h2>\n"
             },
             {
-              "fieldLabel": "Paaris või paaritu",
+              "fieldLabel": "Paaris või üksikud lugemid",
               "fieldType": "dropdown",
               "fieldOptions": {
                 "values": [
@@ -232,7 +232,7 @@
                     "option": "Paaris"
                   },
                   {
-                    "option": "Paaritu"
+                    "option": "Üksikud"
                   }
                 ]
               },
@@ -255,7 +255,7 @@
             {
               "fieldType": "html",
               "elementName": "Parameetri header",
-              "html": "<!-- Your custom HTML here --->\n<h2>Krakeni parameetrid</h2>\n\n\n"
+              "html": "<!-- Your custom HTML here --->\n<h2>Krakeni parameetrid</h2>\n"
             },
             {
               "fieldLabel": "Krakeni andmebaas",
@@ -269,12 +269,12 @@
               "requiredField": true
             },
             {
-              "fieldLabel": "Paaris või paaritu jooksutamine",
+              "fieldLabel": "Paaris lugemid või üksikud lugemid",
               "fieldType": "dropdown",
               "fieldOptions": {
                 "values": [
                   {
-                    "option": "=Paaritu"
+                    "option": "=Üksikud"
                   },
                   {
                     "option": "Paaris"
@@ -313,12 +313,12 @@
               "placeholder": "megares ncbi plasmidfinder argannot resfinder card ecoli_vf vfdb"
             },
             {
-              "fieldLabel": "Minimum identity percentage",
+              "fieldLabel": "Minimaalne identiteedi protsent",
               "fieldType": "number",
               "placeholder": "70"
             },
             {
-              "fieldLabel": "Minimum identity coverage",
+              "fieldLabel": "Minimaalne identiteedi kattuvus",
               "fieldType": "number",
               "placeholder": "40"
             }
@@ -345,27 +345,27 @@
             {
               "fieldType": "html",
               "elementName": "bracken_header",
-              "html": "<!-- Your custom HTML here --->\n<h2>Brackeni ja KrakenTools parameetrid</h2>\n<p>Filtreerimise jaoks eraldada ID-d tühikutega: ID1 ID2 ...</p>"
+              "html": "<!-- Your custom HTML here --->\n<h2>Brackeni ja KrakenTools parameetrid</h2>\n<p>Filtreerimise jaoks eraldada taksonite ID-d tühikutega: ID1 ID2 ...</p>"
             },
             {
-              "fieldLabel": "Read length",
+              "fieldLabel": "Lugemi pikkus",
               "fieldType": "number",
               "placeholder": "100"
             },
             {
-              "fieldLabel": "Minimum abundance threshold",
+              "fieldLabel": "Minimaalne arvukuse lävi",
               "fieldType": "number",
               "placeholder": "10"
             },
             {
-              "fieldLabel": "Taxonomy level",
+              "fieldLabel": "Taksonoomia tase",
               "placeholder": "S"
             },
             {
-              "fieldLabel": "Include taxids"
+              "fieldLabel": "Kaasatavad taksonid"
             },
             {
-              "fieldLabel": "Exclude taxids"
+              "fieldLabel": "Välistatavad taksonid"
             },
             {
               "fieldLabel": "Alfamitmekesisuse tüüp",
@@ -415,16 +415,16 @@
             {
               "fieldType": "html",
               "elementName": "Kausta header",
-              "html": "<!-- Your custom HTML here --->\n<h2>Kaustad ja lõimede arv</h2>"
+              "html": "<!-- Your custom HTML here --->\n<h2>Kaustad ja lõimede arv</h2>\n<p>Siin vaja täielikku failiteed, näiteks: /home/kasutajanimi/kaust</p>"
             },
             {
               "fieldLabel": "Andmete kaust",
-              "placeholder": "/data",
+              "placeholder": "/andmed",
               "requiredField": true
             },
             {
               "fieldLabel": "Väljundi kaust",
-              "placeholder": "/outputs",
+              "placeholder": "/väljundid",
               "requiredField": true
             },
             {
@@ -452,7 +452,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const inputDir = $('Start of form').first().json['Andmete kaust'];\nconst outputDir = $('Start of form').first().json['Väljundi kaust'];\nconst threads = $('Start of form').first().json['Lõimede arv'] || 8;\nconst trimPaired = $('Kraken parameters').first().json['Paaris või paaritu'] === 'Paaris';\nconst megahitBatches = $('Kraken parameters').first().json['Mitu kausta kombineerida järjest']|| 1;\nconst megahitFolders = $('Kraken parameters').first().json['Kaustade nimekiri'];\nconst krakenDb = $('Kraken parameters').first().json['Krakeni andmebaas'];\nconst krakenPvalue = $('Kraken parameters').first().json['p-väärtus'];\nconst krakenPaired = $('Kraken parameters').first().json['Paaris või paaritu jooksutamine'] === 'Paaris';\n\nconst brackenReadlen = $('Bracken parameters').first().json['Read length'] || 100;\nconst brackenThreshold = $('Bracken parameters').first().json['Minimum abundance threshold'] || 10;\nconst brackenTaxonomy = $('Bracken parameters').first().json['Taxonomy level'] || \"S\";\nconst brackenIncludeIds = $('Bracken parameters').first().json['Include taxids'];\nconst brackenExcludeIds = $('Bracken parameters').first().json['Exclude taxids'];\nconst selectedOption = $('Bracken parameters').first().json['Alfamitmekesisuse tüüp'] || \"Shannon\";\nconst diversityMapping = {\n    \"Shannon\": \"Sh\",\n    \"Berger-Parker\": \"BP\",\n    \"Simpson\": \"Si\",\n    \"Pöörd-Simpson\": \"ISi\",\n    \"Fisheri indeks\": \"F\"\n};\nconst alphaDiversity = diversityMapping[selectedOption] || \"Sh\";\nconst abricateDbList = $('Abricate Parameters').first().json.Andmebaasid;\nconst abricateMinId = $('Abricate Parameters').first().json['Minimum identity percentage'] || 70;\nconst abricateMinCov = $('Abricate Parameters').first().json['Minimum identity coverage'] || 40;\n\nconst roaryGenomes = $input.first().json['Geenide nimekiri'];\n\n// Build config lines\nconst configLines = [\n  '# config.sh',\n  `BASE_INPUT_DIR=${inputDir}`,\n  `BASE_OUTPUT_DIR=${outputDir}`,\n  `THREADS=${threads}`,\n  `MEGAHIT_batches=${megahitBatches}`,\n  `MEGAHIT_folders=\"${megahitFolders}\"`,\n  `TRIMGALORE_paired=${trimPaired}`,\n  `KRAKEN_DB=${krakenDb}`,\n  `KRAKEN_pvalue=${krakenPvalue}`,\n  `KRAKEN_paired=${krakenPaired}`,\n  `BRACKEN_readlen=${brackenReadlen}`,\n  `BRACKEN_ab_threshold=${brackenThreshold}`,\n  `BRACKEN_taxonomy=${brackenTaxonomy}`,\n  `BRACKEN_include_ids=\"${brackenIncludeIds}\"`,\n  `BRACKEN_exclude_ids=\"${brackenExcludeIds}\"`,\n  `DIVERSITY_type=\"${alphaDiversity}\"`,\n  `ABRICATE_db_list=\"${abricateDbList}\"`,\n  `ABRICATE_minid_per=${abricateMinId}`,\n  `ABRICATE_minid_cov=${abricateMinCov}`,\n  `ROARY_genomes=\"${roaryGenomes}\"`\n];\n\nreturn [{json: {config: configLines.join('\\n')}}];"
+        "jsCode": "const inputDir = $('Start of form').first().json['Andmete kaust'];\nconst outputDir = $('Start of form').first().json['Väljundi kaust'];\nconst threads = $('Start of form').first().json['Lõimede arv'] || 8;\nconst trimPaired = $('Kraken parameters').first().json['Paaris või üksikud lugemid'] === 'Paaris';\nconst megahitBatches = $('Kraken parameters').first().json['Mitu kausta kombineerida järjest']|| 1;\nconst megahitFolders = $('Kraken parameters').first().json['Kaustade nimekiri'];\nconst krakenDb = $('Kraken parameters').first().json['Krakeni andmebaas'];\nconst krakenPvalue = $('Kraken parameters').first().json['p-väärtus'];\nconst krakenPaired = $('Kraken parameters').first().json['Paaris lugemid või üksikud lugemid'] === 'Paaris';\n\nconst brackenReadlen = $('Bracken parameters').first().json['Lugemi pikkus'] || 100;\nconst brackenThreshold = $('Bracken parameters').first().json['Minimaalne arvukuse lävi'] || 10;\nconst brackenTaxonomy = $('Bracken parameters').first().json['Taksonoomia tase'] || \"S\";\nconst brackenIncludeIds = $('Bracken parameters').first().json['Kaasatavad taksonid'];\nconst brackenExcludeIds = $('Bracken parameters').first().json['Välistatavad taksonid'];\nconst selectedOption = $('Bracken parameters').first().json['Alfamitmekesisuse tüüp'] || \"Shannon\";\nconst diversityMapping = {\n    \"Shannon\": \"Sh\",\n    \"Berger-Parker\": \"BP\",\n    \"Simpson\": \"Si\",\n    \"Pöörd-Simpson\": \"ISi\",\n    \"Fisheri indeks\": \"F\"\n};\nconst alphaDiversity = diversityMapping[selectedOption] || \"Sh\";\nconst abricateDbList = $('Abricate Parameters').first().json.Andmebaasid;\nconst abricateMinId = $('Abricate Parameters').first().json['Minimaalne identiteedi protsent'] || 70;\nconst abricateMinCov = $('Abricate Parameters').first().json['Minimaalne identiteedi kattuvus'] || 40;\n\nconst roaryGenomes = $input.first().json['Geenide nimekiri'];\n\n// Build config lines\nconst configLines = [\n  '# config.sh',\n  `BASE_INPUT_DIR=${inputDir}`,\n  `BASE_OUTPUT_DIR=${outputDir}`,\n  `THREADS=${threads}`,\n  `MEGAHIT_batches=${megahitBatches}`,\n  `MEGAHIT_folders=\"${megahitFolders}\"`,\n  `TRIMGALORE_paired=${trimPaired}`,\n  `KRAKEN_DB=${krakenDb}`,\n  `KRAKEN_pvalue=${krakenPvalue}`,\n  `KRAKEN_paired=${krakenPaired}`,\n  `BRACKEN_readlen=${brackenReadlen}`,\n  `BRACKEN_ab_threshold=${brackenThreshold}`,\n  `BRACKEN_taxonomy=${brackenTaxonomy}`,\n  `BRACKEN_include_ids=\"${brackenIncludeIds}\"`,\n  `BRACKEN_exclude_ids=\"${brackenExcludeIds}\"`,\n  `DIVERSITY_type=\"${alphaDiversity}\"`,\n  `ABRICATE_db_list=\"${abricateDbList}\"`,\n  `ABRICATE_minid_per=${abricateMinId}`,\n  `ABRICATE_minid_cov=${abricateMinCov}`,\n  `ROARY_genomes=\"${roaryGenomes}\"`\n];\n\nreturn [{json: {config: configLines.join('\\n')}}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -467,7 +467,7 @@
       "parameters": {
         "operation": "completion",
         "completionTitle": "Parameetrid sisestatud!",
-        "completionMessage": "Workflow hakkab tööle koheselt...",
+        "completionMessage": "Töövoog hakkab tööle koheselt...",
         "options": {
           "formTitle": ""
         }
@@ -919,7 +919,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "bb1e6e11-23fd-4f34-a73e-0617648446f1",
+  "versionId": "8766d1dd-5940-4c47-8afc-9806df376bf6",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "fd3d3cdc6721a528a22cb747103d5caa827f5ce976b750bc0ea157931f2049c4"
