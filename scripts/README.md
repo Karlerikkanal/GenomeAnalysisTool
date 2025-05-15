@@ -8,6 +8,9 @@ Runs the program [Trim Galore!](https://github.com/FelixKrueger/TrimGalore)
 
 - `-i INPUT_DIR` Path to the input directory. View the expected structure below
 - `-o OUTPUT_DIR` Path to the output directory
+- `-p true|false`  Whether reads are paired-end (default: true)
+- `-q QUALITY`     Phred quality score. Must be an integer between 0 and 100
+- `-l LENGTH`      Discards reads shorter than the integer value
 
 ```
 parent_data_folder/  
@@ -86,6 +89,7 @@ Calculates alpha and beta diversity from Bracken reports using KrakenTools [Dive
 
 - `-i INPUT_DIR` Path to the input directory. All reports should be contained in a single directory
 - `-o OUTPUT_DIR` Path to the output directory
+- `-d DIVERSITY_TYPE` The diversity type for calculating alpha-diversity. (Sh, BP, Si, ISi or F)
 
 ## 7. run_prokka.sh
 Runs [Prokka](https://github.com/tseemann/prokka) on the assembled genomes.
