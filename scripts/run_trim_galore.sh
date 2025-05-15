@@ -6,8 +6,10 @@ source $HOME/config.sh
 usage() {
     echo "Usage: $0 -i INPUT_DIR -o OUTPUT_DIR [-p true|false]"
     echo "  -i INPUT_DIR   Path to the input directory"
-    echo "  -o OUTPUT_DIR  Path to the output directory"
+    echo "  -o OUTPUT_DIR  Path to the base output directory"
     echo "  -p true|false  Whether reads are paired-end (default: true)"
+    echo "  -q QUALITY     Phred quality score for Trim Galore! Must be integer between 0 and 100"
+    echo "  -l LENGTH      Discards reads shorter than the integer value"
     exit 1
 }
 
@@ -16,6 +18,8 @@ while getopts "i:o:p:" opt; do
         i) INPUT_DIR="$OPTARG" ;;
         o) OUTPUT_DIR="$OPTARG" ;;
         p) PAIRED="$OPTARG" ;;
+        q) QUALITY="$OPTARG" ;;
+        l) LENGTH="$OPTARG" ;;
         *) usage ;;
     esac
 done
@@ -23,6 +27,8 @@ done
 INPUT_DIR="${INPUT_DIR:-$BASE_INPUT_DIR}"
 OUTPUT_DIR="${OUTPUT_DIR:-$BASE_OUTPUT_DIR/trim_out}"
 PAIRED="${PAIRED:-$TRIMGALORE_paired}"
+QUALITY="${QUALITY:-$TRIMGALORE_quality}"
+LENGTH="${LENGTH:-$TRIMGALORE_length}"
 
 echo $OUTPUT_DIR
 
@@ -58,7 +64,7 @@ for SUBDIR in "$INPUT_DIR"/*/; do
             echo "Processing $SAMPLE_NAME (paired-end):"
             echo "  R1: $R1_FILE"
             echo "  R2: $R2_FILE"
-            trim_galore --paired --quality 20 --length 50 --fastqc -o "$SAMPLE_OUTPUT" "$R1_FILE" "$R2_FILE"
+            trim_galore --paired --quality $QUALITY --length $LENGTH --fastqc -o "$SAMPLE_OUTPUT" "$R1_FILE" "$R2_FILE"
             echo "Finished processing $SAMPLE_NAME"
         else
             echo "Paired files not found in $SUBDIR. Skipping."
@@ -76,7 +82,7 @@ for SUBDIR in "$INPUT_DIR"/*/; do
         if [[ -n "$SEQ_FILE" ]]; then
             echo "Processing $SAMPLE_NAME (single-end):"
             echo "  File: $SEQ_FILE"
-            trim_galore --quality 20 --length 50 --fastqc -o "$SAMPLE_OUTPUT" "$SEQ_FILE"
+            trim_galore --quality $QUALITY --length $LENGTH --fastqc -o "$SAMPLE_OUTPUT" "$SEQ_FILE"
             echo "Finished processing $SAMPLE_NAME"
         else
             echo "No valid single-end FASTQ file found in $SUBDIR. Skipping."

@@ -8,6 +8,7 @@ usage() {
     echo "  -i INPUT_DIR   Directory with .bracken files"
     echo "  -o OUTPUT_DIR  Directory to store diversity results"
     echo "  -f FILTERED    If filter_bracken_out was applied before this script, changes input directory accordingly"
+    echo "  -d DIVERSITY_TYPE The diversity type for calculating alpha-diversity. (Sh, BP, Si, ISi or F)"
     exit 1
 }
 
@@ -16,6 +17,7 @@ while getopts "i:o:f:" opt; do
     i) INPUT_DIR="$OPTARG" ;;
     o) OUTPUT_DIR="$OPTARG" ;;
     f) FILTERED="$OPTARG" ;;
+    d) DIVERSITY_TYPE="$OPTARG" ;;
     *) usage ;;
   esac
 done

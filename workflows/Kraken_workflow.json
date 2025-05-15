@@ -162,6 +162,16 @@
               "requiredField": true
             },
             {
+              "fieldLabel": "Kvaliteet",
+              "fieldType": "number",
+              "placeholder": "20"
+            },
+            {
+              "fieldLabel": "Pikkus",
+              "fieldType": "number",
+              "placeholder": "50"
+            },
+            {
               "fieldType": "html",
               "elementName": "Parameetri header",
               "html": "<!-- Your custom HTML here --->\n<h2>Krakeni parameetrid</h2>\n"
@@ -394,7 +404,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const inputDir = $('Start of form').first().json['Andmete kaust'];\nconst outputDir = $('Start of form').first().json['Väljundi kaust'];\nconst threads = $('Start of form').first().json['Lõimede arv'] || 8;\nconst trimPaired = $('Kraken parameters').first().json['Paaris või üksikud lugemid'] === 'Paaris';\nconst krakenDb = $('Kraken parameters').first().json['Krakeni andmebaas'];\nconst krakenPvalue = $('Kraken parameters').first().json['p-väärtus'];\nconst krakenPaired = $('Kraken parameters').first().json['Paaris lugemid või üksikud lugemid'] === 'Paaris';\nlet brackenReadlen = $('Bracken parameters').first().json['Lugemi pikkus'] || 100;\nlet brackenThreshold = $('Bracken parameters').first().json['Minimaalne arvukuse lävi'] || 10;\nlet brackenTaxonomy = $('Bracken parameters').first().json['Taksonoomia tase'] || \"S\";\nconst brackenIncludeIds = $('Bracken parameters').first().json['Kaasatavad taksonid'];\nconst brackenExcludeIds = $('Bracken parameters').first().json['Välistatavad taksonid'];\nconst selectedOption = $('Bracken parameters').first().json['Alfamitmekesisuse tüüp'] || \"Shannon\";\nconst diversityMapping = {\n    \"Shannon\": \"Sh\",\n    \"Berger-Parker\": \"BP\",\n    \"Simpson\": \"Si\",\n    \"Pöörd-Simpson\": \"ISi\",\n    \"Fisheri indeks\": \"F\"\n};\nconst alphaDiversity = diversityMapping[selectedOption] || \"Sh\";\n\n// Build config lines\nconst configLines = [\n  '# config.sh',\n  `BASE_INPUT_DIR=${inputDir}`,\n  `BASE_OUTPUT_DIR=${outputDir}`,\n  `THREADS=${threads}`,\n  `TRIMGALORE_paired=${trimPaired}`,\n  `KRAKEN_DB=${krakenDb}`,\n  `KRAKEN_pvalue=${krakenPvalue}`,\n  `KRAKEN_paired=${krakenPaired}`,\n  `BRACKEN_readlen=${brackenReadlen}`,\n  `BRACKEN_ab_threshold=${brackenThreshold}`,\n  `BRACKEN_taxonomy=${brackenTaxonomy}`,\n  `BRACKEN_include_ids=\"${brackenIncludeIds}\"`,\n  `BRACKEN_exclude_ids=\"${brackenExcludeIds}\"`,\n  `DIVERSITY_type=\"${alphaDiversity}\"`,\n];\n\nreturn [{json: {config: configLines.join('\\n')}}];"
+        "jsCode": "const inputDir = $('Start of form').first().json['Andmete kaust'];\nconst outputDir = $('Start of form').first().json['Väljundi kaust'];\nconst threads = $('Start of form').first().json['Lõimede arv'] || 8;\nconst trimPaired = $('Kraken parameters').first().json['Paaris või üksikud lugemid'] === 'Paaris';\nconst trimQuality = $('Kraken parameters').first().json['Kvaliteet'] || 20;\nconst trimLength = $('Kraken parameters').first().json['Pikkus'] || 50;\nconst krakenDb = $('Kraken parameters').first().json['Krakeni andmebaas'];\nconst krakenPvalue = $('Kraken parameters').first().json['p-väärtus'];\nconst krakenPaired = $('Kraken parameters').first().json['Paaris lugemid või üksikud lugemid'] === 'Paaris';\nlet brackenReadlen = $('Bracken parameters').first().json['Lugemi pikkus'] || 100;\nlet brackenThreshold = $('Bracken parameters').first().json['Minimaalne arvukuse lävi'] || 10;\nlet brackenTaxonomy = $('Bracken parameters').first().json['Taksonoomia tase'] || \"S\";\nconst brackenIncludeIds = $('Bracken parameters').first().json['Kaasatavad taksonid'];\nconst brackenExcludeIds = $('Bracken parameters').first().json['Välistatavad taksonid'];\nconst selectedOption = $('Bracken parameters').first().json['Alfamitmekesisuse tüüp'] || \"Shannon\";\nconst diversityMapping = {\n    \"Shannon\": \"Sh\",\n    \"Berger-Parker\": \"BP\",\n    \"Simpson\": \"Si\",\n    \"Pöörd-Simpson\": \"ISi\",\n    \"Fisheri indeks\": \"F\"\n};\nconst alphaDiversity = diversityMapping[selectedOption] || \"Sh\";\n\n// Build config lines\nconst configLines = [\n  '# config.sh',\n  `BASE_INPUT_DIR=${inputDir}`,\n  `BASE_OUTPUT_DIR=${outputDir}`,\n  `THREADS=${threads}`,\n  `TRIMGALORE_paired=${trimPaired}`,\n  `TRIMGALORE_quality=${trimQuality}`,\n  `TRIMGALORE_length=${trimLength}`,\n  `KRAKEN_DB=${krakenDb}`,\n  `KRAKEN_pvalue=${krakenPvalue}`,\n  `KRAKEN_paired=${krakenPaired}`,\n  `BRACKEN_readlen=${brackenReadlen}`,\n  `BRACKEN_ab_threshold=${brackenThreshold}`,\n  `BRACKEN_taxonomy=${brackenTaxonomy}`,\n  `BRACKEN_include_ids=\"${brackenIncludeIds}\"`,\n  `BRACKEN_exclude_ids=\"${brackenExcludeIds}\"`,\n  `DIVERSITY_type=\"${alphaDiversity}\"`,\n];\n\nreturn [{json: {config: configLines.join('\\n')}}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -574,7 +584,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "5a21bb5a-3364-4d90-995f-d2405b3016af",
+  "versionId": "97921751-6cd4-4b8e-8fce-a9b7aeff2e27",
   "meta": {
     "instanceId": "fd3d3cdc6721a528a22cb747103d5caa827f5ce976b750bc0ea157931f2049c4"
   },
