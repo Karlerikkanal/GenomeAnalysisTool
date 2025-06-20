@@ -1,7 +1,7 @@
 #!/bin/bash
 
 trap "echo 'Script interrupted by user. Exiting...'; exit 1" SIGINT
-source $HOME/config.sh
+source $HOME/GenomeAnalysisTool/default_config.sh
 
 usage() {
     echo "Usage: $0 -i INPUT_DIR -o OUTPUT_DIR -b BATCH_SIZE -t THREADS [--groups group1,group2;group3,group4]"
@@ -9,16 +9,10 @@ usage() {
     echo "  -o OUTPUT_DIR    Path to the base output directory"
     echo "  -b BATCH_SIZE    Number of samples per MEGAHIT batch"
     echo "  -t THREADS       Number of CPU threads for MEGAHIT"
+    echo "  -f CONFIG_FILE   Config file to source"
     echo "  --groups         Optional: custom groupings as 'strain1,strain2;strain3,strain4'"
     exit 1
 }
-
-# Defaults
-INPUT_DIR="${INPUT_DIR:-$BASE_OUTPUT_DIR/trim_out}"
-OUTPUT_DIR="${OUTPUT_DIR:-$BASE_OUTPUT_DIR/megahit_out}"
-BATCH_SIZE="${BATCH_SIZE:-$MEGAHIT_batches}"
-THREADS="${THREADS:-$THREADS}"
-CUSTOM_GROUPS="${CUSTOM_GROUPS:-$MEGAHIT_folders}"
 
 # Argument parsing
 while [[ $# -gt 0 ]]; do
@@ -27,11 +21,22 @@ while [[ $# -gt 0 ]]; do
         -o) OUTPUT_DIR="$2"; shift 2 ;;
         -b) BATCH_SIZE="$2"; shift 2 ;;
         -t) THREADS="$2"; shift 2 ;;
+        -f) CONFIG_FILE="$2"; shift 2 ;;
         --groups) CUSTOM_GROUPS="$2"; shift 2 ;;
         -h|--help) usage ;;
         *) echo "Unknown option: $1"; usage ;;
     esac
 done
+
+if [[ -n "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+fi
+
+INPUT_DIR="${INPUT_DIR:-$BASE_OUTPUT_DIR/trim_out}"
+OUTPUT_DIR="${OUTPUT_DIR:-$BASE_OUTPUT_DIR/megahit_out}"
+BATCH_SIZE="${BATCH_SIZE:-$MEGAHIT_batches}"
+THREADS="${THREADS:-$THREADS}"
+CUSTOM_GROUPS="${CUSTOM_GROUPS:-$MEGAHIT_folders}"
 
 mkdir -p "$OUTPUT_DIR"
 
@@ -42,11 +47,16 @@ if [[ -n "$CUSTOM_GROUPS" ]]; then
     echo "Running in custom grouping mode..."
     
     # Split by semicolon to get group strings
+    CUSTOM_GROUPS="$(echo "$CUSTOM_GROUPS" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+    CUSTOM_GROUPS="$(echo "$CUSTOM_GROUPS" | sed 's/ *; */;/g')"
+
     IFS=';' read -ra GROUP_STRINGS <<< "$CUSTOM_GROUPS"
     
     for group_str in "${GROUP_STRINGS[@]}"; do
         if [[ -n "$group_str" ]]; then
-            group_batches+=("$group_str")
+            # Split each group by comma into an array of samples
+            IFS=',' read -ra group <<< "$group_str"
+            group_batches+=("${group[*]}")  # Space-separated group string
         fi
     done
 else
@@ -59,7 +69,7 @@ fi
 
 # Process each group
 for batch in "${group_batches[@]}"; do
-    read -ra group <<< "$batch"
+    read -ra group <<< "$(echo "$batch" | xargs)"
     batch_name=$(IFS=_; echo "${group[*]}")
     output_dir="$OUTPUT_DIR/$batch_name"
 

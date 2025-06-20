@@ -1,7 +1,7 @@
 #!/bin/bash
 
 trap "echo 'Script interrupted by user. Exiting...'; exit 1" SIGINT
-source $HOME/config.sh
+source $HOME/GenomeAnalysisTool/default_config.sh
 
 usage() {
     echo "Usage: $0 -i INPUT_DIR -k KRAKEN_DIR -o OUTPUT_DIR -s SCRIPT_DIR -t THREADS"
@@ -10,29 +10,39 @@ usage() {
     echo "  -o OUTPUT_DIR    Directory for KEGGCharter output"
     echo "  -s SCRIPT_DIR    Directory containing helper Python scripts"
     echo "  -t THREADS       Number of CPU threads (default: 8)"
+    echo "  -f CONFIG_FILE   Config file to source"
     exit 1
 }
 
-while getopts "i:k:o:s:t:" opt; do
+while getopts "i:k:o:s:t:f:" opt; do
     case "$opt" in
         i) INPUT_DIR="$OPTARG" ;;
         k) KRAKEN_DIR="$OPTARG" ;;
         o) OUTPUT_DIR="$OPTARG" ;;
         s) SCRIPT_DIR="$OPTARG" ;;
         t) THREADS="$OPTARG" ;;
+        f) CONFIG_FILE="$OPTARG" ;;
         *) usage ;;
     esac
 done
 
+if [[ -n "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+fi
+
 INPUT_DIR="${INPUT_DIR:-$BASE_OUTPUT_DIR/prokka_out}"
 KRAKEN_DIR="${KRAKEN_DIR:-$BASE_OUTPUT_DIR/kraken2_out}"
 OUTPUT_DIR="${OUTPUT_DIR:-$BASE_OUTPUT_DIR/keggcharter_out}"
-SCRIPT_DIR="${SCRIPT_DIR:-$HOME}/scripts"
+SCRIPT_DIR="${SCRIPT_DIR:-$HOME}/GenomeAnalysisTool/scripts"
 THREADS="${THREADS:-$THREADS}"
 
 if [[ -z "$INPUT_DIR" || -z "$KRAKEN_DIR" || -z "$OUTPUT_DIR" || -z "$SCRIPT_DIR" ]]; then
     echo "Error: Missing required arguments."
     usage
+fi
+
+if [ "$THREADS" -gt 8 ]; then
+    THREADS=8
 fi
 
 mkdir -p "$OUTPUT_DIR"
@@ -73,7 +83,7 @@ for sample_dir in "$INPUT_DIR"/*; do
                 echo "KEGGCharter completed successfully for $sample_name"
 
                 # Run clean_file.py after KEGGCharter. Skip if already in output_dir to avoid multiple uploads to database.
-                OUTPUT_CSV="$HOME/database_files/${sample_name}.csv"
+                OUTPUT_CSV="$HOME/data/mudeli_input/${sample_name}.csv"
                 if [[ -f "$OUTPUT_CSV" ]]; then
                     echo "Skipping cleaning: $OUTPUT_CSV already exists."
                 else

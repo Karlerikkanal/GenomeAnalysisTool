@@ -1,26 +1,32 @@
 #!/bin/bash
 
 trap "echo 'Script interrupted by user. Exiting...'; exit 1" SIGINT
-source $HOME/config.sh
+source $HOME/GenomeAnalysisTool/default_config.sh
 
 usage() {
     echo "Usage: $0 -i INPUT_DIR -o OUTPUT_DIR"
     echo "  -i INPUT_DIR   Directory with .bracken files"
     echo "  -o OUTPUT_DIR  Directory to store diversity results"
     echo "  -f FILTERED    If filter_bracken_out was applied before this script, changes input directory accordingly"
+    echo "  -c CONFIG_FILE Config file to source"
     echo "  -d DIVERSITY_TYPE The diversity type for calculating alpha-diversity. (Sh, BP, Si, ISi or F)"
     exit 1
 }
 
-while getopts "i:o:f:" opt; do
+while getopts "i:o:f:c:d:" opt; do
   case "$opt" in
     i) INPUT_DIR="$OPTARG" ;;
     o) OUTPUT_DIR="$OPTARG" ;;
     f) FILTERED="$OPTARG" ;;
+    c) CONFIG_FILE="$OPTARG" ;;
     d) DIVERSITY_TYPE="$OPTARG" ;;
     *) usage ;;
   esac
 done
+
+if [[ -n "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+fi
 
 BASE_OUT_DIR="${BASE_OUT_DIR:-$BASE_OUTPUT_DIR}"
 INPUT_DIR="${INPUT_DIR:-$BASE_OUT_DIR/bracken_out}"

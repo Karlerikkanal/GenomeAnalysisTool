@@ -1,24 +1,30 @@
 #!/bin/bash
 
 trap "echo 'Script interrupted by user. Exiting...'; exit 1" SIGINT
-source $HOME/config.sh
+source $HOME/GenomeAnalysisTool/default_config.sh
 
 usage() {
     echo "Usage: $0 -i INPUT_DIR -o OUTPUT_DIR -t THREADS"
     echo "  -i INPUT_DIR    Path to the input directory (each subfolder should contain final.contigs.fa)"
     echo "  -o OUTPUT_DIR   Path to the output directory for Prokka results"
     echo "  -t THREADS      Number of CPU threads to use (default: 8)"
+    echo "  -f CONFIG_FILE  Config file to source"
     exit 1
 }
 
-while getopts "i:o:t:" opt; do
+while getopts "i:o:t:f:" opt; do
     case "$opt" in
         i) INPUT_DIR="$OPTARG" ;;
         o) OUTPUT_DIR="$OPTARG" ;;
         t) THREADS="$OPTARG" ;;
+        f) CONFIG_FILE="$OPTARG" ;;
         *) usage ;;
     esac
 done
+
+if [[ -n "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+fi
 
 # Assign values from command line or overwrite with config file parameters
 INPUT_DIR="${INPUT_DIR:-$BASE_OUTPUT_DIR/megahit_out}"

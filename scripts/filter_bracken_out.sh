@@ -1,12 +1,13 @@
 #!/bin/bash
 
 trap "echo 'Script interrupted by user. Exiting...'; exit 1" SIGINT
-source "$HOME/config.sh"
+source "$HOME/GenomeAnalysisTool/default_config.sh"
 
 usage() {
     echo "Usage: $0 [-i BRACKEN_OUTPUT_DIR] [-o FILTERED_OUTPUT_DIR] [--include TAXID1 TAXID2 ...] [--exclude TAXID3 TAXID4 ...]"
     echo "  -i BRACKEN_OUTPUT_DIR       Directory containing Bracken output files"
     echo "  -o FILTERED_OUTPUT_DIR      Directory to store filtered results"
+    echo "  -f CONFIG_FILE              Config file to source"
     echo "  --include TAXID1 TAXID2     Space-separated taxonomy IDs to include (optional)"
     echo "  --exclude TAXID3 TAXID4     Space-separated taxonomy IDs to exclude (optional)"
     echo
@@ -29,6 +30,7 @@ while [[ $# -gt 0 ]]; do
             FILTERED_BRACKEN_OUTPUT_DIR="$2"
             shift 2
             ;;
+        -f) CONFIG_FILE="$2"; shift 2 ;;
         --include)
             shift
             while [[ $# -gt 0 && ! "$1" =~ ^- ]]; do
@@ -52,6 +54,10 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+if [[ -n "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+fi
 
 # Assign defaults from config if not provided from command line
 BRACKEN_OUTPUT_DIR="${BRACKEN_OUTPUT_DIR:-$BASE_OUTPUT_DIR/bracken_out}"

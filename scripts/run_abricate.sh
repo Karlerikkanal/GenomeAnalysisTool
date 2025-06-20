@@ -1,6 +1,6 @@
 #!/bin/bash
 trap "echo 'Script interrupted by user. Exiting...'; exit 1" SIGINT
-source $HOME/config.sh
+source $HOME/GenomeAnalysisTool/default_config.sh
 
 usage() {
     echo "Usage: $0 -d \"db1 db2 db3\" [-i INPUT_DIR] [-o OUTPUT_DIR] [-m MINID] [-c MINCOV]"
@@ -9,19 +9,25 @@ usage() {
     echo "  -o OUTPUT_DIR  Path to the output directory"
     echo "  -m MINID       Minimum identity percentage"
     echo "  -c MINCOV      Minimum coverage percentage"
+    echo "  -f CONFIG_FILE Config file to source"
     exit 1
 }
 
-while getopts "d:i:o:m:c:" opt; do
+while getopts "d:i:o:m:c:f:" opt; do
     case "$opt" in
         d) IFS=' ' read -r -a DATABASES <<< "$OPTARG" ;;
         i) INPUT_DIR="$OPTARG" ;;
         o) OUTPUT_DIR="$OPTARG" ;;
         m) MINID="$OPTARG" ;;
         c) MINCOV="$OPTARG" ;;
+        f) CONFIG_FILE="$OPTARG" ;;
         *) usage ;;
     esac
 done
+
+if [[ -n "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+fi
 
 INPUT_DIR="${INPUT_DIR:-$BASE_OUTPUT_DIR/megahit_out}"
 OUTPUT_DIR="${OUTPUT_DIR:-$BASE_OUTPUT_DIR/abricate_out}"

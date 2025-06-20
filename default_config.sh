@@ -1,0 +1,22 @@
+# default_config.sh
+BASE_INPUT_DIR=""
+BASE_OUTPUT_DIR=""
+THREADS=8
+TRIMGALORE_paired=true
+TRIMGALORE_quality=20
+TRIMGALORE_length=50
+MEGAHIT_batches=2
+MEGAHIT_folders=""
+KRAKEN_DB="$HOME/kraken_db"
+KRAKEN_pvalue=0.5
+KRAKEN_paired=false
+BRACKEN_readlen=100
+BRACKEN_ab_threshold=10
+BRACKEN_taxonomy=S
+BRACKEN_include_ids=""
+BRACKEN_exclude_ids=""
+DIVERSITY_type="Sh"
+ABRICATE_db_list=""
+ABRICATE_minid_per=70
+ABRICATE_minid_cov=40
+ROARY_genomes="undefined"

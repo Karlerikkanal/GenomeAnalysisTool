@@ -1,7 +1,7 @@
 #!/bin/bash
 
 trap "echo 'Script interrupted by user. Exiting...'; exit 1" SIGINT
-source $HOME/config.sh
+source $HOME/GenomeAnalysisTool/default_config.sh
 
 usage() {
     echo "Usage: $0 [-i INPUT_DIR] [-o OUTPUT_DIR] [-d KRAKEN2_DB] [-c CONFIDENCE] [-t THREADS] [-p true/false]"
@@ -9,12 +9,13 @@ usage() {
     echo "  -o OUTPUT_DIR   Path to the output directory"
     echo "  -d KRAKEN2_DB   Path to the Kraken2 database"
     echo "  -c CONFIDENCE   Confidence threshold"
+    echo "  -f CONFIG_FILE  Config file to source"
     echo "  -t THREADS      Number of CPU threads"
     echo "  -p PAIRED       Set to 'true' for paired-end read analysis, 'false' for assembled contigs"
     exit 1
 }
 
-while getopts "i:o:d:c:t:p:" opt; do
+while getopts "i:o:d:c:f:t:p:" opt; do
     case "$opt" in
         i) INPUT_DIR="$OPTARG" ;;
         o) OUTPUT_DIR="$OPTARG" ;;
@@ -22,9 +23,14 @@ while getopts "i:o:d:c:t:p:" opt; do
         c) CONFIDENCE="$OPTARG" ;;
         t) THREADS="$OPTARG" ;;
         p) PAIRED="$OPTARG" ;;
+        f) CONFIG_FILE="$OPTARG" ;;
         *) usage ;;
     esac
 done
+
+if [[ -n "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+fi
 
 OUTPUT_DIR="${OUTPUT_DIR:-$BASE_OUTPUT_DIR/kraken2_out}"
 KRAKEN2_DB="${KRAKEN2_DB:-$KRAKEN_DB}"

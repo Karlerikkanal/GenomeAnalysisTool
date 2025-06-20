@@ -3,12 +3,12 @@
   "nodes": [
     {
       "parameters": {
-        "command": "scripts/run_trim_galore.sh"
+        "command": "=GenomeAnalysisTool/scripts/run_trim_galore.sh -f {{ $('Create config file path').item.json.config_file_path }}"
       },
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
-        780,
+        920,
         -40
       ],
       "id": "85a20a0f-975f-4ba8-beda-c29d3bf38753",
@@ -51,7 +51,7 @@
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.2,
       "position": [
-        -460,
+        -860,
         -40
       ],
       "id": "af294039-5192-40b4-a457-99bc4d4a1e73",
@@ -70,7 +70,7 @@
       "type": "n8n-nodes-base.form",
       "typeVersion": 1,
       "position": [
-        80,
+        -300,
         -40
       ],
       "id": "61b5465b-d21f-4eba-8efa-8eae63096910",
@@ -80,14 +80,14 @@
     {
       "parameters": {
         "operation": "write",
-        "fileName": "config.sh",
+        "fileName": "={{ $('Create config file path').item.json.config_file_path }}",
         "dataPropertyName": "=config_file",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1,
       "position": [
-        600,
+        740,
         -40
       ],
       "id": "412b0e3c-2416-4c78-a83e-13489e716529",
@@ -99,13 +99,13 @@
         "sourceProperty": "config",
         "binaryPropertyName": "config_file",
         "options": {
-          "fileName": "config"
+          "fileName": "={{ \"config_\" + $('Start of form').item.json['Andmete kaust'].split('/').filter(Boolean).pop() }}"
         }
       },
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        420,
+        560,
         -40
       ],
       "id": "5acd649b-5e1b-4a48-93ef-1dc52b35d1c5",
@@ -113,12 +113,12 @@
     },
     {
       "parameters": {
-        "command": "scripts/run_kraken2.sh"
+        "command": "=GenomeAnalysisTool/scripts/run_kraken2.sh -f {{ $('Create config file path').item.json.config_file_path }}"
       },
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
-        940,
+        1080,
         -40
       ],
       "id": "c818128b-eddd-405c-a72b-6738d16c9e4a",
@@ -126,12 +126,12 @@
     },
     {
       "parameters": {
-        "command": "scripts/run_bracken.sh"
+        "command": "=GenomeAnalysisTool/scripts/run_bracken.sh -f {{ $('Create config file path').item.json.config_file_path }}"
       },
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
-        1100,
+        1240,
         -40
       ],
       "id": "821af4bb-f96d-472c-9acb-70f0c28f0ac5",
@@ -178,14 +178,12 @@
             },
             {
               "fieldLabel": "Krakeni andmebaas",
-              "placeholder": "/kraken_db",
-              "requiredField": true
+              "placeholder": "/kraken_db"
             },
             {
               "fieldLabel": "p-väärtus",
               "fieldType": "number",
-              "placeholder": "0.5",
-              "requiredField": true
+              "placeholder": "0.5"
             },
             {
               "fieldLabel": "Paaris lugemid või üksikud lugemid",
@@ -211,7 +209,7 @@
       "type": "n8n-nodes-base.form",
       "typeVersion": 1,
       "position": [
-        -260,
+        -660,
         -40
       ],
       "id": "7838557c-a669-4f08-94c0-b2b6cc62cd37",
@@ -220,12 +218,12 @@
     },
     {
       "parameters": {
-        "command": "scripts/filter_bracken_out.sh"
+        "command": "=GenomeAnalysisTool/scripts/filter_bracken_out.sh -f {{ $('Create config file path').item.json.config_file_path }}"
       },
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
-        1500,
+        1640,
         -160
       ],
       "id": "a03cc623-7de2-4d6b-9dfc-93117333a18f",
@@ -269,7 +267,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1300,
+        1440,
         -40
       ],
       "id": "ad8aac13-d0c4-4f18-84e3-10693f95222a",
@@ -277,12 +275,12 @@
     },
     {
       "parameters": {
-        "command": "=scripts/calculate_diversity.sh -f {{ $json.filtered }}"
+        "command": "=GenomeAnalysisTool/scripts/calculate_diversity.sh -f {{ $json.filtered }} -c {{ $('Create config file path').item.json.config_file_path }}"
       },
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
-        1880,
+        2020,
         -20
       ],
       "id": "337f8864-2be6-46c4-88a0-5f25827c5da3",
@@ -305,7 +303,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1500,
+        1640,
         -20
       ],
       "id": "d9ccb762-7c92-4c98-8afc-e154828ff1e6",
@@ -328,7 +326,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1660,
+        1800,
         -160
       ],
       "id": "fe5aa213-ab8d-4ec2-9aab-e61c6cf679ca",
@@ -395,7 +393,7 @@
       "type": "n8n-nodes-base.form",
       "typeVersion": 1,
       "position": [
-        -80,
+        -480,
         -40
       ],
       "id": "39617c03-76be-45d0-a4a4-c53885a4151b",
@@ -404,16 +402,69 @@
     },
     {
       "parameters": {
-        "jsCode": "const inputDir = $('Start of form').first().json['Andmete kaust'];\nconst outputDir = $('Start of form').first().json['Väljundi kaust'];\nconst threads = $('Start of form').first().json['Lõimede arv'] || 8;\nconst trimPaired = $('Kraken parameters').first().json['Paaris või üksikud lugemid'] === 'Paaris';\nconst trimQuality = $('Kraken parameters').first().json['Kvaliteet'] || 20;\nconst trimLength = $('Kraken parameters').first().json['Pikkus'] || 50;\nconst krakenDb = $('Kraken parameters').first().json['Krakeni andmebaas'];\nconst krakenPvalue = $('Kraken parameters').first().json['p-väärtus'];\nconst krakenPaired = $('Kraken parameters').first().json['Paaris lugemid või üksikud lugemid'] === 'Paaris';\nlet brackenReadlen = $('Bracken parameters').first().json['Lugemi pikkus'] || 100;\nlet brackenThreshold = $('Bracken parameters').first().json['Minimaalne arvukuse lävi'] || 10;\nlet brackenTaxonomy = $('Bracken parameters').first().json['Taksonoomia tase'] || \"S\";\nconst brackenIncludeIds = $('Bracken parameters').first().json['Kaasatavad taksonid'];\nconst brackenExcludeIds = $('Bracken parameters').first().json['Välistatavad taksonid'];\nconst selectedOption = $('Bracken parameters').first().json['Alfamitmekesisuse tüüp'] || \"Shannon\";\nconst diversityMapping = {\n    \"Shannon\": \"Sh\",\n    \"Berger-Parker\": \"BP\",\n    \"Simpson\": \"Si\",\n    \"Pöörd-Simpson\": \"ISi\",\n    \"Fisheri indeks\": \"F\"\n};\nconst alphaDiversity = diversityMapping[selectedOption] || \"Sh\";\n\n// Build config lines\nconst configLines = [\n  '# config.sh',\n  `BASE_INPUT_DIR=${inputDir}`,\n  `BASE_OUTPUT_DIR=${outputDir}`,\n  `THREADS=${threads}`,\n  `TRIMGALORE_paired=${trimPaired}`,\n  `TRIMGALORE_quality=${trimQuality}`,\n  `TRIMGALORE_length=${trimLength}`,\n  `KRAKEN_DB=${krakenDb}`,\n  `KRAKEN_pvalue=${krakenPvalue}`,\n  `KRAKEN_paired=${krakenPaired}`,\n  `BRACKEN_readlen=${brackenReadlen}`,\n  `BRACKEN_ab_threshold=${brackenThreshold}`,\n  `BRACKEN_taxonomy=${brackenTaxonomy}`,\n  `BRACKEN_include_ids=\"${brackenIncludeIds}\"`,\n  `BRACKEN_exclude_ids=\"${brackenExcludeIds}\"`,\n  `DIVERSITY_type=\"${alphaDiversity}\"`,\n];\n\nreturn [{json: {config: configLines.join('\\n')}}];"
+        "jsCode": "const inputDir = $('Start of form').first().json['Andmete kaust'];\nconst outputDir = $('Start of form').first().json['Väljundi kaust'];\nconst threads = $('Start of form').first().json['Lõimede arv'] || 8;\nconst trimPaired = $('Kraken parameters').first().json['Paaris või üksikud lugemid'] === 'Paaris';\nconst trimQuality = $('Kraken parameters').first().json['Kvaliteet'] || 20;\nconst trimLength = $('Kraken parameters').first().json['Pikkus'] || 50;\nconst krakenDb = $('Kraken parameters').first().json['Krakeni andmebaas'] || \"/kraken_db\";\nconst krakenPvalue = $('Kraken parameters').first().json['p-väärtus'] || 0.5;\nconst krakenPaired = $('Kraken parameters').first().json['Paaris lugemid või üksikud lugemid'] === 'Paaris';\nlet brackenReadlen = $('Bracken parameters').first().json['Lugemi pikkus'] || 100;\nlet brackenThreshold = $('Bracken parameters').first().json['Minimaalne arvukuse lävi'] || 10;\nlet brackenTaxonomy = $('Bracken parameters').first().json['Taksonoomia tase'] || \"S\";\nconst brackenIncludeIds = $('Bracken parameters').first().json['Kaasatavad taksonid'];\nconst brackenExcludeIds = $('Bracken parameters').first().json['Välistatavad taksonid'];\nconst selectedOption = $('Bracken parameters').first().json['Alfamitmekesisuse tüüp'] || \"Shannon\";\nconst diversityMapping = {\n    \"Shannon\": \"Sh\",\n    \"Berger-Parker\": \"BP\",\n    \"Simpson\": \"Si\",\n    \"Pöörd-Simpson\": \"ISi\",\n    \"Fisheri indeks\": \"F\"\n};\nconst alphaDiversity = diversityMapping[selectedOption] || \"Sh\";\nconst fullPath = $input.first().json.config_file_path;\nconst lastPart = fullPath.split('/').filter(Boolean).pop();\n// Build config lines\nconst configLines = [\n  `# ${lastPart}`,\n  `BASE_INPUT_DIR=${inputDir}`,\n  `BASE_OUTPUT_DIR=${outputDir}`,\n  `THREADS=${threads}`,\n  `TRIMGALORE_paired=${trimPaired}`,\n  `TRIMGALORE_quality=${trimQuality}`,\n  `TRIMGALORE_length=${trimLength}`,\n  `KRAKEN_DB=${krakenDb}`,\n  `KRAKEN_pvalue=${krakenPvalue}`,\n  `KRAKEN_paired=${krakenPaired}`,\n  `BRACKEN_readlen=${brackenReadlen}`,\n  `BRACKEN_ab_threshold=${brackenThreshold}`,\n  `BRACKEN_taxonomy=${brackenTaxonomy}`,\n  `BRACKEN_include_ids=\"${brackenIncludeIds}\"`,\n  `BRACKEN_exclude_ids=\"${brackenExcludeIds}\"`,\n  `DIVERSITY_type=\"${alphaDiversity}\"`,\n];\n\nreturn [{json: {config: configLines.join('\\n')}}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        260,
+        400,
         -40
       ],
       "id": "44fdb841-485c-4986-80b2-f1fd1fb59567",
       "name": "Config file creation"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "12cd2bba-cc72-4e9e-bcde-21cd81a34154",
+              "name": "config_file_path",
+              "value": "={{\"/home/karle/configs/\" + \"config_\" + $('Start of form').item.json['Andmete kaust'].split('/').filter(Boolean).pop() + \"_\" + $json.formattedDate + \".sh\"}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        -40
+      ],
+      "id": "684d6882-dd0f-49f9-a0e7-a22c6a33844e",
+      "name": "Create config file path"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -120,
+        -40
+      ],
+      "id": "86d824d6-a5e0-4a75-bda1-25a105464de5",
+      "name": "Get current time"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $json.currentDate }}",
+        "format": "custom",
+        "customFormat": "yyyyLLdd_HHmm",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        60,
+        -40
+      ],
+      "id": "40d929b1-16e1-4eba-8454-2f5fc39f73c6",
+      "name": "Format time into timestamp"
     }
   ],
   "pinData": {},
@@ -433,7 +484,7 @@
       "main": [
         [
           {
-            "node": "Config file creation",
+            "node": "Get current time",
             "type": "main",
             "index": 0
           }
@@ -578,13 +629,51 @@
           }
         ]
       ]
+    },
+    "Create config file path": {
+      "main": [
+        [
+          {
+            "node": "Config file creation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Diversity calculation": {
+      "main": [
+        []
+      ]
+    },
+    "Get current time": {
+      "main": [
+        [
+          {
+            "node": "Format time into timestamp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format time into timestamp": {
+      "main": [
+        [
+          {
+            "node": "Create config file path",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "97921751-6cd4-4b8e-8fce-a9b7aeff2e27",
+  "versionId": "4be07e83-86c5-44f9-a06a-f0a96f4b5706",
   "meta": {
     "instanceId": "fd3d3cdc6721a528a22cb747103d5caa827f5ce976b750bc0ea157931f2049c4"
   },

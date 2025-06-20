@@ -11,6 +11,7 @@ Runs the program [Trim Galore!](https://github.com/FelixKrueger/TrimGalore)
 - `-p true|false`  Whether reads are paired-end (default: true)
 - `-q QUALITY`     Phred quality score. Must be an integer between 0 and 100
 - `-l LENGTH`      Discards reads shorter than the integer value
+- `-f CONFIG_FILE` Optional config file to source, view default_config as example
 
 ```
 parent_data_folder/  
@@ -33,6 +34,7 @@ Runs [MEGAHIT](https://github.com/voutcn/megahit)
 - `-o OUTPUT_DIR` Path to the output directory
 - `-b BATCH_SIZE` Number of samples to combine
 - `-t THREADS` Number of CPU threads
+- `-f CONFIG_FILE` Optional config file to source, view default_config as example
 - `--groups`   Optional: define your own folders to combine, like: "strain1,strain2;strain3,strain4", will override BATCH_SIZE parameter
 
 ```
@@ -54,6 +56,7 @@ Runs the program [Kraken 2](https://github.com/DerrickWood/kraken2) and later co
 - `-c CONFIDENCE` Confidence threshold (between 0 and 1)
 - `-t THREADS` Number of CPU threads to use
 - `-p PAIRED` Set 'true' for paired-end read analysis (Trim Galore! outputs), 'false' for assembled contigs (MEGAHIT outputs)
+- `-f CONFIG_FILE` Optional config file to source, view default_config as example
 
 ```
 parent_data_folder/  
@@ -75,12 +78,14 @@ Runs [Bracken](https://github.com/jenniferlu717/Bracken) on Kraken reports.
 - `-r READ_LEN` Read length for Bracken (default: 100)
 - `-l LEVEL` Taxonomic level (default: S)
 - `-t THRESHOLD` Minimum abundance threshold for Bracken (default: 10)
+- `-f CONFIG_FILE` Optional config file to source, view default_config as example
 
 ## 5. filter_bracken_out.sh
 Uses [filter_bracken.out.py](https://github.com/jenniferlu717/KrakenTools/blob/master/filter_bracken.out.py) from KrakenTools to filter taxonomies. Note that taxids in include and exclude lists shouldn't overlap.
 
 - `-i INPUT_DIR` Path to the input directory. All reports should be contained in a single directory
 - `-o OUTPUT_DIR` Path to the output directory
+- `-f CONFIG_FILE` Optional config file to source, view default_config as example
 - `--include TAXID1 TAXID2` Space-separated taxonomy IDs to include
 - `--exclude TAXID3 TAXID4` Space-separated taxonomy IDs to exclude
 
@@ -90,6 +95,7 @@ Calculates alpha and beta diversity from Bracken reports using KrakenTools [Dive
 - `-i INPUT_DIR` Path to the input directory. All reports should be contained in a single directory
 - `-o OUTPUT_DIR` Path to the output directory
 - `-d DIVERSITY_TYPE` The diversity type for calculating alpha-diversity. (Sh, BP, Si, ISi or F)
+- `-c CONFIG_FILE` Optional config file to source, view default_config as example
 
 ## 7. run_prokka.sh
 Runs [Prokka](https://github.com/tseemann/prokka) on the assembled genomes.
@@ -97,6 +103,7 @@ Runs [Prokka](https://github.com/tseemann/prokka) on the assembled genomes.
 - `-i INPUT_DIR` Path to the input directory. Input structure should be the same as for run_kraken2.sh
 - `-o OUTPUT_DIR` Path to the output directory
 - `-t THREADS` Number of CPU threads to use (default: 8)
+- `-f CONFIG_FILE` Optional config file to source, view default_config as example
 
 ## 8. run_keggcharter.sh
 
@@ -107,7 +114,7 @@ Runs [KEGGCharter](https://github.com/iquasere/KEGGCharter) on the Prokka .tsv o
 - `-k KRAKEN_DIR` Path to the Kraken reports directory, all reports should be contained in a single directory and match the names in the input directory
 - `-s SCRIPT_DIR` Path to the folder containing scripts `clean_file.py` and `select_species.py`
 - `-t THREADS` Number of CPU threads to use (default:8)
-
+- `-f CONFIG_FILE` Optional config file to source, view default_config as example
 
 ```
 parent_data_folder/  
@@ -128,6 +135,7 @@ Runs [Roary](https://github.com/sanger-pathogens/Roary) to calculate the pan-gen
 - `-i INPUT_DIR` Path to the input directory containing Prokka files. Expected input structure same as for run_keggcharter.sh
 - `-o OUTPUT_DIR` Path to the output directory
 - `-t THREADS` Number of CPU threads to use (default:8)
+- `-f CONFIG_FILE` Optional config file to source, view default_config as example
 - `--samples` Space-separated sample names to combine
 
 ## 10. run_quast.sh
@@ -135,7 +143,8 @@ Runs [Quast](https://github.com/ablab/quast).
 
 - `-i INPUT_DIR` Path to the input directory. Input structure should be the same as for run_kraken2.sh
 - `-o OUTPUT_DIR` Path to the output directory
-- `-t THREADS` Number of CPU threads to use (default: 4)
+- `-f CONFIG_FILE` Optional config file to source, view default_config as example
+- `-t THREADS` Number of CPU threads to use (default: 8)
 
 ## 11. run_abricate.sh
 Runs [Abricate](https://github.com/tseemann/abricate) on the assembled genomes.
@@ -145,19 +154,22 @@ Runs [Abricate](https://github.com/tseemann/abricate) on the assembled genomes.
 - `-o OUTPUT_DIR` Path to the output directory
 - `-m MINID` Minimum identity percentage (0 to 100)
 - `-c MINCOV` Minimum coverage percentage (0 to 100)
+- `-f CONFIG_FILE` Optional config file to source, view default_config as example
 
 ## 12. run_integron_finder.sh
 Runs [Integron Finder](https://github.com/gem-pasteur/Integron_Finder).
 
 - `-i INPUT_DIR` Path to the input directory. Input structure should be the same as for run_kraken2.sh
 - `-o OUTPUT_DIR` Path to the output directory
-- `-t THREADS` Number of CPU threads to use (default: 4)
+- `-t THREADS` Number of CPU threads to use (default: 8)
+- `-f CONFIG_FILE` Optional config file to source, view default_config as example
 
 ## 13. run_isescan.sh
 Runs [ISEScan](https://github.com/xiezhq/ISEScan).
 
 - `-i INPUT_DIR` Path to the input directory. Input structure should be the same as for run_kraken2.sh
 - `-o OUTPUT_DIR` Path to the output directory
+- `-f CONFIG_FILE` Optional config file to source, view default_config as example
 - `-t THREADS` Number of CPU threads to use (default: 8)
 
 ## 14. extract_abstracts.py

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 trap "echo 'Script interrupted by user. Exiting...'; exit 1" SIGINT
-source $HOME/config.sh
+source $HOME/GenomeAnalysisTool/default_config.sh
 
 usage() {
     echo "Usage: $0 [-i INPUT_DIR] [-o OUTPUT_DIR] [-d BRACKEN_DB] [-r READ_LEN] [-l LEVEL] [-t THRESHOLD]"
@@ -11,10 +11,11 @@ usage() {
     echo "  -r READ_LEN        Read length (default: 100)"
     echo "  -l LEVEL           Taxonomic level (default: S)"
     echo "  -t THRESHOLD       Minimum abundance threshold (default: 10)"
+    echo "  -f CONFIG_FILE     Config file to source"
     exit 1
 }
 
-while getopts "i:o:d:r:l:t:" opt; do
+while getopts "i:o:d:r:l:t:f:" opt; do
     case "$opt" in
         i) INPUT_DIR="$OPTARG" ;;
         o) OUTPUT_DIR="$OPTARG" ;;
@@ -22,9 +23,14 @@ while getopts "i:o:d:r:l:t:" opt; do
         r) READ_LEN="$OPTARG" ;;
         l) LEVEL="$OPTARG" ;;
         t) THRESHOLD="$OPTARG" ;;
+        f) CONFIG_FILE="$OPTARG" ;;
         *) usage ;;
     esac
 done
+
+if [[ -n "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+fi
 
 INPUT_DIR="${INPUT_DIR:-$BASE_OUTPUT_DIR/kraken2_out}"
 OUTPUT_DIR="${OUTPUT_DIR:-$BASE_OUTPUT_DIR/bracken_out}"

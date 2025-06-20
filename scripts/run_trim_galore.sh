@@ -1,7 +1,7 @@
 #!/bin/bash
 
 trap "echo 'Script interrupted by user. Exiting...'; exit 1" SIGINT
-source $HOME/config.sh
+source $HOME/GenomeAnalysisTool/default_config.sh
 
 usage() {
     echo "Usage: $0 -i INPUT_DIR -o OUTPUT_DIR [-p true|false]"
@@ -10,16 +10,18 @@ usage() {
     echo "  -p true|false  Whether reads are paired-end (default: true)"
     echo "  -q QUALITY     Phred quality score for Trim Galore! Must be integer between 0 and 100"
     echo "  -l LENGTH      Discards reads shorter than the integer value"
+    echo "  -f CONFIG_FILE      Config file to source"
     exit 1
 }
 
-while getopts "i:o:p:" opt; do
+while getopts "i:o:p:q:l:f:" opt; do
     case "$opt" in
         i) INPUT_DIR="$OPTARG" ;;
         o) OUTPUT_DIR="$OPTARG" ;;
         p) PAIRED="$OPTARG" ;;
         q) QUALITY="$OPTARG" ;;
         l) LENGTH="$OPTARG" ;;
+        f) CONFIG_FILE="$OPTARG" ;;
         *) usage ;;
     esac
 done
@@ -35,6 +37,10 @@ echo $OUTPUT_DIR
 if [[ -z "$INPUT_DIR" || -z "$OUTPUT_DIR" ]]; then
     echo "Error: Both input and output directories must be specified."
     usage
+fi
+
+if [[ -n "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
 fi
 
 mkdir -p "$OUTPUT_DIR"
@@ -64,7 +70,8 @@ for SUBDIR in "$INPUT_DIR"/*/; do
             echo "Processing $SAMPLE_NAME (paired-end):"
             echo "  R1: $R1_FILE"
             echo "  R2: $R2_FILE"
-            trim_galore --paired --quality $QUALITY --length $LENGTH --fastqc -o "$SAMPLE_OUTPUT" "$R1_FILE" "$R2_FILE"
+            trim_galore --paired --quality $QUALITY --length $LENGTH --fastqc -o "$SAMPLE_OUTPUT" "$R1_FILE" "$R2_FILE" --suppress_warn
+
             echo "Finished processing $SAMPLE_NAME"
         else
             echo "Paired files not found in $SUBDIR. Skipping."
@@ -82,7 +89,7 @@ for SUBDIR in "$INPUT_DIR"/*/; do
         if [[ -n "$SEQ_FILE" ]]; then
             echo "Processing $SAMPLE_NAME (single-end):"
             echo "  File: $SEQ_FILE"
-            trim_galore --quality $QUALITY --length $LENGTH --fastqc -o "$SAMPLE_OUTPUT" "$SEQ_FILE"
+            trim_galore --quality $QUALITY --length $LENGTH --fastqc -o "$SAMPLE_OUTPUT" "$SEQ_FILE" --suppress_warn
             echo "Finished processing $SAMPLE_NAME"
         else
             echo "No valid single-end FASTQ file found in $SUBDIR. Skipping."

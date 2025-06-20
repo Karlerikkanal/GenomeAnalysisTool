@@ -1,14 +1,15 @@
 #!/bin/bash
 
 trap "echo 'Script interrupted by user. Exiting...'; exit 1" SIGINT
-source $HOME/config.sh
+source $HOME/GenomeAnalysisTool/default_config.sh
 
 usage() {
     echo "Usage: $0 [-i INPUT_DIR] [-o OUTPUT_DIR] [-t THREADS] --samples <sample1 sample2 ...>"
     echo "  -i INPUT_DIR    Directory with Prokka output (default: $INPUT_DIR)"
-    echo "  -o OUTPUT_DIR    Base output directory for Roary (default: $OUTPUT_DIR)"
-    echo "  -t THREADS       Number of CPU threads (default: $THREADS)"
-    echo "  --samples        Space-separated sample names to combine (required)"
+    echo "  -o OUTPUT_DIR   Base output directory for Roary (default: $OUTPUT_DIR)"
+    echo "  -t THREADS      Number of CPU threads (default: $THREADS)"
+    echo "  -f CONFIG_FILE  Config file to source"
+    echo "  --samples       Space-separated sample names to combine (required)"
     exit 1
 }
 
@@ -28,6 +29,10 @@ while [[ $# -gt 0 ]]; do
             THREADS="$2"
             shift 2
             ;;
+        -f)
+            CONFIG_FILE="$2"
+            shift 2
+            ;;
         --samples)
             shift
             while [[ $# -gt 0 && ! "$1" =~ ^- ]]; do
@@ -44,6 +49,11 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+if [[ -n "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+fi
+
 
 INPUT_DIR="${INPUT_DIR:-$BASE_OUTPUT_DIR/prokka_out}"
 OUTPUT_DIR="${OUTPUT_DIR:-$BASE_OUTPUT_DIR/roary_out}"
